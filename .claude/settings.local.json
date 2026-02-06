@@ -11,7 +11,11 @@
       "Bash(npx vite:*)",
       "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" scripts/ingest_data.py)",
       "Bash(ls:*)",
-      "Bash(gh:*)"
+      "Bash(gh:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git push:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
