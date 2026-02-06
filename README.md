@@ -1,247 +1,138 @@
 # NBS Degree Advisor Chatbot
 
-AI-powered chatbot for Nanyang Business School that provides information about degree programs using RAG (Retrieval-Augmented Generation) and agentic AI capabilities.
+An AI-powered conversational agent for Nanyang Business School that demonstrates advanced RAG (Retrieval-Augmented Generation) and agentic AI capabilities. This project showcases practical applications of large language models in educational contexts.
 
 **AN6001 AI and Big Data Group Project** | Nanyang Technological University
 
-## Features
+## Overview
 
-- **AI-Powered Chat**: Conversational interface powered by GPT-4o
-- **RAG (Retrieval-Augmented Generation)**: Answers grounded in NBS program data
-- **Program Comparison**: Compare different NBS programs
-- **FAQ Support**: Quick answers to common questions
-- **Conversation History**: Maintains context across messages
-- **Modern UI**: Responsive React frontend with NBS branding
+This chatbot provides intelligent assistance to prospective students exploring NBS degree programs. Using a combination of vector similarity search, LangChain agents, and GPT-4o, it delivers contextually relevant information through natural conversation.
+
+## Key Features
+
+- **Agentic AI Architecture**: Autonomous tool selection and multi-step reasoning using LangChain agents
+- **RAG Pipeline**: Retrieval-augmented generation with vector embeddings for accurate, grounded responses
+- **Program Intelligence**: Compare degree programs, answer FAQs, and provide detailed program information
+- **Conversation Management**: Stateful dialogue with context preservation across sessions
+- **Modern Stack**: FastAPI backend, React frontend, Supabase vector database
 
 ## Architecture
 
 ```
-Frontend (React + Vite + Tailwind)
-         │
-         │ REST API
-         ▼
-Backend (FastAPI)
-         │
-         ├── LangChain Agent
-         │   ├── RAG Tool (search knowledge base)
-         │   ├── Compare Tool (compare programs)
-         │   └── FAQ Tool (common questions)
-         │
-         └── Data Layer
-             ├── Supabase (pgvector for RAG)
-             └── OpenAI API (GPT-4o, embeddings)
+┌─────────────────────────────────┐
+│   Frontend (React + Vite)       │
+│   • Chat Interface              │
+│   • Program Explorer            │
+└────────────┬────────────────────┘
+             │ REST API
+             ▼
+┌─────────────────────────────────┐
+│   Backend (FastAPI)             │
+│   ┌───────────────────────┐     │
+│   │  LangChain Agent      │     │
+│   │  • RAG Tool           │     │
+│   │  • Compare Tool       │     │
+│   │  • FAQ Tool           │     │
+│   └───────────────────────┘     │
+│             │                   │
+│   ┌─────────┴─────────┐         │
+│   │  Data Layer       │         │
+│   │  • Supabase       │         │
+│   │  • OpenAI API     │         │
+│   └───────────────────┘         │
+└─────────────────────────────────┘
 ```
 
-## Prerequisites
+## Technology Stack
 
-- Python 3.11+
-- Node.js 18+
-- Supabase account
-- OpenAI API key
+**Backend**
+- FastAPI for high-performance async API
+- LangChain for agentic workflow orchestration
+- OpenAI GPT-4o for language generation
+- text-embedding-3-small for semantic search (1536 dimensions)
 
-## Setup
+**Frontend**
+- React 18 with modern hooks
+- Vite for fast development and optimized builds
+- Tailwind CSS for responsive UI
 
-### 1. Clone and Install Dependencies
+**Data Layer**
+- Supabase (PostgreSQL + pgvector extension)
+- Vector similarity search for RAG retrieval
+- Structured program data storage
 
-```bash
-# Backend
-cd backend
-pip install -r requirements.txt
+## Getting Started
 
-# Frontend
-cd frontend
-npm install
-```
+Detailed setup instructions are available in `CLAUDE.md` for development purposes. At a high level:
 
-### 2. Set Up Supabase
+1. **Prerequisites**: Python 3.11+, Node.js 18+, Supabase account, OpenAI API key
+2. **Environment Setup**: Configure credentials in `backend/.env`
+3. **Database Initialization**: Run SQL setup script and ingest program data
+4. **Launch Services**: Start FastAPI backend and React frontend
 
-1. Create a new Supabase project
-2. Run the SQL setup script in `scripts/supabase_setup.sql`
-3. Get your project URL and keys from Settings > API
-
-### 3. Configure Environment
-
-```bash
-# Copy example env file
-cp backend/.env.example backend/.env
-
-# Edit .env with your credentials
-OPENAI_API_KEY=sk-...
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_KEY=eyJ...
-SUPABASE_SERVICE_KEY=eyJ...
-```
-
-### 4. Ingest Data
-
-**CRITICAL STEP**: The chatbot requires data to be ingested into the vector store to function properly.
-
-```bash
-# Use the nbs-msba conda environment for Python operations
-# Scrape NBS website (optional - sample data already included in data/scraped/)
-"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/scrape_nbs.py
-
-# Ingest data into vector store (REQUIRED)
-"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/ingest_data.py
-```
-
-**Expected Output**:
-```
-Starting data ingestion...
-==================================================
-Ingesting Nanyang MBA...
-  -> Ingested 4 document chunks
-...
-==================================================
-Ingestion complete! Total documents: 36
-```
-
-If you see errors or 0 documents ingested, check:
-- Supabase credentials in `backend/.env`
-- OpenAI API key is valid
-- `data/scraped/all_programs.json` exists
-
-### 5. Run the Application
-
-```bash
-# Terminal 1: Start backend (using conda environment)
-cd backend
-"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" -m uvicorn app.main:app --reload --port 8000
-
-# Or if conda environment is activated:
-uvicorn app.main:app --reload --port 8000
-
-# Terminal 2: Start frontend
-cd frontend
-npm run dev
-```
-
-Visit **http://localhost:5173** to use the chatbot.
-
-Backend API docs: **http://localhost:8000/docs**
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/api/chat/` | POST | Send chat message |
-| `/api/chat/history/{id}` | GET | Get conversation history |
-| `/api/programs/` | GET | List all programs |
-| `/api/programs/{id}` | GET | Get program by ID |
-| `/api/programs/type/{type}` | GET | Get programs by type |
+The application runs on:
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8000`
+- API Documentation: `http://localhost:8000/docs`
 
 ## Project Structure
 
 ```
-├── backend/
+├── backend/              FastAPI application with LangChain agents
 │   ├── app/
-│   │   ├── main.py              # FastAPI entry point
-│   │   ├── config.py            # Configuration
-│   │   ├── api/routes/          # API endpoints
-│   │   ├── agents/              # LangChain agent
-│   │   ├── rag/                 # RAG pipeline
-│   │   └── db/                  # Database models
-│   └── requirements.txt
+│   │   ├── agents/      Agent orchestration and tool definitions
+│   │   ├── rag/         RAG pipeline (embeddings, retrieval)
+│   │   ├── api/routes/  REST API endpoints
+│   │   └── db/          Database models and utilities
 │
-├── frontend/
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── hooks/               # Custom hooks
-│   │   └── services/            # API client
-│   └── package.json
+├── frontend/            React application
+│   └── src/
+│       ├── components/  UI components
+│       ├── hooks/       Custom React hooks
+│       └── services/    API integration
 │
-├── scripts/
-│   ├── scrape_nbs.py           # Web scraper
-│   ├── ingest_data.py          # Data ingestion
-│   └── supabase_setup.sql      # Database setup
+├── scripts/             Utility scripts
+│   ├── scrape_nbs.py   Web scraping for program data
+│   ├── ingest_data.py  Vector database ingestion
+│   └── supabase_setup.sql  Database schema
 │
-└── data/scraped/               # Scraped content
+└── data/scraped/        Source program data
 ```
 
-## Technologies
+## Core Capabilities
 
-- **Backend**: FastAPI, LangChain, OpenAI
-- **Frontend**: React 18, Vite, Tailwind CSS
-- **Database**: Supabase (PostgreSQL + pgvector)
-- **AI**: GPT-4o, text-embedding-3-small
+### RAG (Retrieval-Augmented Generation)
+- Semantic search over NBS program data using vector embeddings
+- Context-aware responses grounded in official program information
+- Configurable similarity thresholds for retrieval precision
+
+### Agentic AI
+- LangChain-based agent with autonomous tool selection
+- Multi-step reasoning for complex queries
+- Tools: knowledge search, program comparison, FAQ lookup
+
+### API Design
+The REST API provides endpoints for chat interaction, conversation history, and program data retrieval. Full API documentation is available via FastAPI's automatic OpenAPI interface.
+
+## Use Cases
+
+- **Prospective Students**: Explore NBS programs through natural conversation
+- **Program Comparison**: Side-by-side analysis of degree options
+- **FAQ Automation**: Instant answers to common admissions questions
+- **Educational Demo**: Showcase practical applications of RAG and agentic AI
 
 ## Development
 
-### Backend Development
+The project follows a modular architecture with clear separation between frontend, backend, and data layers. See `CLAUDE.md` for detailed development guidelines and setup instructions.
 
-```bash
-cd backend
-uvicorn app.main:app --reload
-```
+## Academic Context
 
-### Frontend Development
-
-```bash
-cd frontend
-npm run dev
-```
-
-### Troubleshooting: Rollup Module Error (Windows)
-
-If you see `Error: Cannot find module @rollup/rollup-win32-x64-msvc`:
-
-```cmd
-cd frontend
-rmdir /s /q node_modules
-del package-lock.json
-npm cache clean --force
-npm install
-npm run dev
-```
-
-**Note:** Run all npm commands from the same environment (Windows CMD or WSL, not mixed).
-
-### Testing the API
-
-```bash
-# Health check
-curl http://localhost:8000/health
-
-# Send chat message
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"message": "What MBA programs does NBS offer?"}'
-```
-
-## Recent Updates
-
-### February 1, 2026
-
-**Fixed Empty/Generic Chatbot Responses**:
-- ✅ Ingested 36 document chunks from 9 NBS programs into vector database
-- ✅ Enhanced `backend/app/rag/ingestion.py` to process program "sections" field
-- ✅ Lowered similarity threshold from 0.7 → 0.5 for better retrieval
-- ✅ Updated admissions link to `https://www.ntu.edu.sg/business/admissions`
-
-**How the Fix Works**:
-1. The chatbot uses RAG (Retrieval-Augmented Generation) to find relevant program information
-2. Previously, the vector database was empty, causing generic "I can't answer" responses
-3. After running `scripts/ingest_data.py`, 36 document chunks are now searchable
-4. The lowered threshold allows more relevant results to be retrieved
-
-## Troubleshooting
-
-### Chatbot Returns Generic Answers
-
-**Symptom**: Chatbot says "I'm sorry I can't answer" or gives vague responses
-
-**Solution**:
-1. Check if data has been ingested: Run `scripts/ingest_data.py`
-2. Verify Supabase connection: Check `backend/.env` credentials
-3. Restart backend server after ingestion
-
-### Empty Search Results
-
-**Cause**: Similarity threshold too high or no matching documents
-
-**Fix**: Threshold is now 0.5 (was 0.7) in `backend/app/rag/retriever.py:11`
+This project was developed as part of the AN6001 AI and Big Data course at Nanyang Business School, demonstrating practical applications of:
+- Large language model integration
+- Vector databases and semantic search
+- Agentic AI architectures
+- Modern full-stack development practices
 
 ## License
 
-This project is for educational purposes as part of the AN6001 course at Nanyang Business School.
+Educational project for AN6001 course at Nanyang Technological University.
