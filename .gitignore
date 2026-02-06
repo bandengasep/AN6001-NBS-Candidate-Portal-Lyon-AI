@@ -52,6 +52,7 @@ frontend/build/
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
@@ -68,3 +69,12 @@ htmlcov/
 # Local data (keep structure, ignore content)
 data/scraped/*.json
 !data/scraped/all_programs.json
+
+# Reference/Sample Data
+University Education Data Files/
+
+# Project Documentation (keep locally, not in repo)
+Group Project Guideline.pdf
+
+# MCP Configuration (personal settings)
+.mcp.json
