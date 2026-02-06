@@ -10,7 +10,8 @@
       "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -c \"from langchain.agents import create_agent; print\\(''create_agent imported OK''\\)\")",
       "Bash(npx vite:*)",
       "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" scripts/ingest_data.py)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(gh:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
