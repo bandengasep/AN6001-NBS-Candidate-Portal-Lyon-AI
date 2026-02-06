@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -c \"import pkg_resources; packages = [str\\(p\\).split\\(\\)[0] for p in pkg_resources.working_set]; print\\(''\\\\n''.join\\(sorted\\(packages, key=str.lower\\)\\)\\)\")",
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -m pip list)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -c \"from app.main import app; print\\(''Backend imports OK''\\)\")",
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -c \"import langchain; print\\(''langchain version:'', langchain.__version__\\); from langchain import agents; print\\(''Available:'', [x for x in dir\\(agents\\) if ''agent'' in x.lower\\(\\) and not x.startswith\\(''_''\\)]\\)\")",
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" -c \"from langchain.agents import create_agent; print\\(''create_agent imported OK''\\)\")",
+      "Bash(npx vite:*)",
+      "Bash(\"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe\" scripts/ingest_data.py)",
+      "Bash(ls:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

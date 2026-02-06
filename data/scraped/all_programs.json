@@ -1,0 +1,151 @@
+[
+  {
+    "name": "Nanyang MBA",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/nanyang-mba",
+    "title": "Nanyang MBA",
+    "description": "The Nanyang MBA is a full-time, 12-month programme designed for ambitious professionals seeking to accelerate their careers. Ranked among the top MBA programmes globally by Financial Times, our programme offers a unique blend of rigorous academics, experiential learning, and global exposure. Students gain hands-on experience through consulting projects, international study trips, and leadership development modules. The diverse cohort brings together professionals from over 20 countries, creating a rich learning environment. Key focus areas include strategy, finance, marketing, and entrepreneurship, with specialization tracks in Asset Management, Business Analytics, and more.",
+    "degree_type": "MBA",
+    "requirements": {
+      "Academic": "Bachelor's degree from an accredited institution",
+      "Work Experience": "Minimum 3 years of full-time post-graduation work experience",
+      "Tests": "GMAT or GRE (waivers available for exceptional candidates)",
+      "English": "TOEFL/IELTS for non-native English speakers"
+    },
+    "sections": {
+      "Curriculum": "The MBA curriculum consists of core courses in the first term covering fundamentals of business, followed by electives and specializations. Students complete a capstone project working with real companies.",
+      "Career Outcomes": "Graduates pursue careers in consulting, banking, technology, and entrepreneurship. Top recruiters include McKinsey, BCG, Goldman Sachs, Google, and Amazon. Average salary increase of 80% within 3 years of graduation."
+    }
+  },
+  {
+    "name": "Executive MBA",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/executive-mba",
+    "title": "Executive MBA",
+    "description": "The Nanyang Executive MBA is an 18-month part-time programme designed for senior executives and business leaders who want to enhance their strategic thinking while continuing their careers. Classes are held on alternate weekends, allowing executives to balance work and study. The programme includes international modules in China and the US, providing global business perspectives. Participants engage in action learning projects that address real business challenges in their organizations.",
+    "degree_type": "EMBA",
+    "requirements": {
+      "Academic": "Bachelor's degree or equivalent professional qualification",
+      "Work Experience": "Minimum 8-10 years of work experience with significant managerial responsibility",
+      "Tests": "GMAT/GRE may be waived based on profile",
+      "Sponsorship": "Company sponsorship recommended"
+    },
+    "sections": {
+      "Format": "Weekend classes held on alternate Saturdays and Sundays, with international residencies in Shanghai and Silicon Valley",
+      "Career Impact": "Designed for executives already in leadership roles seeking to advance to C-suite positions"
+    }
+  },
+  {
+    "name": "MSc Business Analytics",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/msc-business-analytics",
+    "title": "MSc Business Analytics",
+    "description": "The MSc in Business Analytics (MSBA) is a one-year full-time programme that equips students with the skills to leverage data for business decision-making. The programme combines business knowledge with advanced analytics techniques including machine learning, optimization, and data visualization. Students work on real-world projects with industry partners and complete a capstone project. The curriculum covers Python, R, SQL, and various analytics tools, preparing graduates for roles as data scientists, business analysts, and analytics consultants.",
+    "degree_type": "MSc",
+    "requirements": {
+      "Academic": "Bachelor's degree with strong quantitative background (STEM, Economics, Business preferred)",
+      "Work Experience": "1-2 years preferred but not required",
+      "Tests": "GMAT or GRE required",
+      "Prerequisites": "Basic programming knowledge and statistics"
+    },
+    "sections": {
+      "Curriculum": "Core courses include Data Management, Machine Learning, Statistical Analysis, Optimization, and Business Intelligence. Electives cover topics like Deep Learning, NLP, and Financial Analytics.",
+      "Career Outcomes": "Graduates work at companies like Google, Amazon, DBS Bank, and consulting firms. Roles include Data Scientist, Business Analyst, Analytics Manager, and Product Analyst."
+    }
+  },
+  {
+    "name": "MSc Financial Engineering",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/msc-financial-engineering",
+    "title": "MSc Financial Engineering",
+    "description": "The MSc in Financial Engineering is a rigorous one-year programme jointly offered by NBS and the School of Physical and Mathematical Sciences. It prepares students for careers in quantitative finance, risk management, and trading. The curriculum covers derivatives pricing, portfolio optimization, risk modeling, and algorithmic trading. Students gain proficiency in programming languages like Python and C++, and work with industry-standard tools like Bloomberg and MATLAB.",
+    "degree_type": "MSc",
+    "requirements": {
+      "Academic": "Bachelor's degree in quantitative fields (Mathematics, Physics, Engineering, Computer Science, or quantitative Economics)",
+      "Work Experience": "Not required, fresh graduates welcome",
+      "Tests": "GRE preferred, GMAT accepted",
+      "Prerequisites": "Strong mathematical background including calculus, linear algebra, and probability"
+    },
+    "sections": {
+      "Curriculum": "Core modules include Stochastic Calculus, Derivatives Pricing, Risk Management, and Computational Methods. Students choose from specialization tracks in Trading, Risk Management, or Quantitative Research.",
+      "Career Outcomes": "Graduates work at investment banks, hedge funds, and financial institutions in roles like Quantitative Analyst, Risk Manager, Derivatives Trader, and Structurer."
+    }
+  },
+  {
+    "name": "MSc Accountancy",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/msc-accountancy",
+    "title": "MSc Accountancy",
+    "description": "The MSc in Accountancy is designed for professionals seeking advanced knowledge in accounting, auditing, and financial reporting. The programme is recognized by CPA Australia and can count towards professional certification requirements. It covers advanced topics in financial accounting, management accounting, taxation, and auditing. The curriculum also addresses emerging areas like forensic accounting and sustainability reporting.",
+    "degree_type": "MSc",
+    "requirements": {
+      "Academic": "Bachelor's degree in Accountancy or related field",
+      "Work Experience": "Preferred but not required",
+      "Tests": "GMAT or GRE",
+      "Professional": "Relevant accounting certification is advantageous"
+    },
+    "sections": {
+      "Curriculum": "Covers Advanced Financial Accounting, Taxation, Auditing, and Management Accounting. Electives include Forensic Accounting, Data Analytics in Accounting, and Corporate Governance.",
+      "Career Outcomes": "Graduates pursue careers in Big Four accounting firms, corporate finance departments, and regulatory bodies."
+    }
+  },
+  {
+    "name": "MSc Marketing Science",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/msc-marketing-science",
+    "title": "MSc Marketing Science",
+    "description": "The MSc in Marketing Science combines marketing theory with data analytics and scientific methods. Students learn to apply quantitative techniques to marketing problems, including customer analytics, pricing optimization, and digital marketing. The programme prepares graduates for roles in brand management, market research, and marketing analytics.",
+    "degree_type": "MSc",
+    "requirements": {
+      "Academic": "Bachelor's degree from accredited institution",
+      "Work Experience": "Marketing experience preferred",
+      "Tests": "GMAT or GRE required"
+    },
+    "sections": {
+      "Curriculum": "Core courses cover Consumer Behavior, Marketing Analytics, Brand Management, Digital Marketing, and Marketing Research Methods.",
+      "Career Outcomes": "Graduates work in brand management, market research firms, advertising agencies, and tech companies in marketing analytics roles."
+    }
+  },
+  {
+    "name": "MSc Asset & Wealth Management",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/master-of-science-in-asset-and-wealth-management",
+    "title": "MSc Asset & Wealth Management",
+    "description": "The MSc in Asset & Wealth Management prepares students for careers in investment management, private banking, and wealth advisory. The programme covers portfolio management, alternative investments, wealth planning, and behavioral finance. Students learn from both academics and industry practitioners, with opportunities for CFA exam preparation.",
+    "degree_type": "MSc",
+    "requirements": {
+      "Academic": "Bachelor's degree, preferably in finance or related field",
+      "Work Experience": "1-2 years in finance preferred",
+      "Tests": "GMAT or GRE required"
+    },
+    "sections": {
+      "Curriculum": "Covers Portfolio Management, Alternative Investments, Wealth Planning, Private Equity, and Family Office Management.",
+      "Career Outcomes": "Graduates pursue careers as Portfolio Managers, Private Bankers, Wealth Advisors, and Investment Analysts at leading financial institutions."
+    }
+  },
+  {
+    "name": "PhD in Business",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/graduate/phd",
+    "title": "PhD in Business",
+    "description": "The PhD programme prepares students for careers in academic research and teaching at leading business schools. Students specialize in areas including Accounting, Finance, Marketing, Strategy, and Organizational Behavior. The programme typically takes 4-5 years and includes coursework, comprehensive exams, and dissertation research. Full funding is available for qualified candidates.",
+    "degree_type": "PhD",
+    "requirements": {
+      "Academic": "Master's degree or exceptional Bachelor's degree",
+      "Tests": "GMAT or GRE required",
+      "Research": "Research experience and clear research interests",
+      "Funding": "Full scholarships available"
+    },
+    "sections": {
+      "Specializations": "Accounting, Finance, Marketing, Strategy & Organization, Operations Management",
+      "Career Outcomes": "Graduates become faculty members at top business schools globally and research positions in industry and policy organizations."
+    }
+  },
+  {
+    "name": "Bachelor of Business",
+    "url": "https://www.nbs.ntu.edu.sg/programmes/undergraduate/bachelor-of-business",
+    "title": "Bachelor of Business",
+    "description": "The Bachelor of Business is a comprehensive 4-year undergraduate programme providing a strong foundation in business and management. Students can specialize in areas such as Accounting, Banking & Finance, Marketing, or Human Resource Consulting. The programme includes internship opportunities, overseas exchange programmes, and industry projects.",
+    "degree_type": "Bachelor",
+    "requirements": {
+      "Academic": "A-Levels, IB Diploma, or equivalent",
+      "Tests": "SAT scores may be required for some applicants"
+    },
+    "sections": {
+      "Curriculum": "First two years cover business fundamentals including Economics, Accounting, Finance, Marketing, and Management. Years 3-4 focus on specialization and electives.",
+      "Career Outcomes": "Graduates enter roles in banking, consulting, marketing, and multinational corporations. Many pursue further education including MBA programmes."
+    }
+  }
+]

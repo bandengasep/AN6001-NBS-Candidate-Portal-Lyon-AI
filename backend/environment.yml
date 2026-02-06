@@ -1,0 +1,31 @@
+name: nbs-msba
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core web framework
+  - python>=3.11
+  - fastapi>=0.115.0
+  - uvicorn>=0.32.0
+
+  # Data validation
+  - pydantic>=2.9.0
+  - pydantic-settings>=2.6.0
+
+  # Environment & utilities
+  - python-dotenv>=1.0.0
+  - aiofiles>=24.1.0
+
+  # Web scraping
+  - beautifulsoup4>=4.12.0
+  - httpx>=0.28.0
+
+  # Pip-only packages (not available in conda)
+  - pip
+  - pip:
+    - langchain>=0.3.0
+    - langchain-openai>=0.2.0
+    - langchain-community>=0.3.0
+    - langgraph>=0.2.0
+    - openai>=1.50.0
+    - supabase>=2.10.0

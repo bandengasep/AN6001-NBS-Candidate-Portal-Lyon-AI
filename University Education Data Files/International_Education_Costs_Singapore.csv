@@ -1,0 +1,17 @@
+﻿country,city,university,program,level,duration_years,tuition_usd,living_cost_index,rent_usd,visa_fee_usd,insurance_usd,exchange_rate
+Singapore,Singapore,NUS,Finance,Master,1.5,35000,81.1,1900,90,800,1.34
+Singapore,Singapore,NTU,Data Science,PhD,4,8900,81.5,1600,90,800,1.34
+Singapore,Singapore,NTU,Computer Science,Bachelor,4,32500,81.1,1500,90,800,1.34
+Singapore,Singapore,SMU,Information Systems,Bachelor,4,31800,81.1,1500,90,800,1.34
+Singapore,Singapore,SUTD,Computer Science & Design,Bachelor,4,31200,81.1,1500,90,800,1.34
+Singapore,Singapore,NUS,Artificial Intelligence,Master,2,35600,81.1,1500,90,800,1.34
+Singapore,Singapore,NTU,Data Science & AI,Master,2,34900,81.1,1500,90,800,1.34
+Singapore,Singapore,SUTD,Technology & Innovation,Master,2,33800,81.1,1500,90,800,1.34
+Singapore,Singapore,SMU,Computing & Innovation,Master,2,34200,81.1,1500,90,800,1.34
+Singapore,Singapore,NUS,Computer Engineering,PhD,4,38500,81.1,1500,90,800,1.34
+Singapore,Singapore,NTU,Digital Systems & AI,PhD,4,37900,81.1,1500,90,800,1.34
+Singapore,Singapore,NUS,Artificial Intelligence,Master,2,42000,83.8,1200,90,800,1.35
+Singapore,Singapore,NTU,Computer Science,PhD,4,40000,83.8,1100,90,800,1.35
+Singapore,Singapore,SMU,Data Analytics,Bachelor,4,38000,83.8,1150,90,800,1.35
+Singapore,Singapore,SUTD,Artificial Intelligence,Master,2,39000,83.8,1100,90,800,1.35
+Singapore,Singapore,SUTD,Robotics,PhD,4,37000,83.8,1050,90,800,1.35
