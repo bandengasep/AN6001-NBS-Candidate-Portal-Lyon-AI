@@ -28,13 +28,14 @@ export function ChatInput({ onSend, onClear, isLoading, disabled }) {
     const hasFile = attachedFile?.status === 'ready';
     if (!hasText && !hasFile) return;
 
-    let message = input.trim();
-    if (hasFile) {
-      const prefix = `[Attached file: ${attachedFile.filename}]\n\nExtracted content:\n${attachedFile.extractedText}\n\n`;
-      message = prefix + (message || 'I uploaded this document. Can you review it?');
-    }
+    const message = input.trim();
+    const fileData = hasFile ? {
+      filename: attachedFile.filename,
+      extractedText: attachedFile.extractedText,
+      fileType: attachedFile.fileType,
+    } : null;
 
-    onSend(message);
+    onSend(message, fileData);
     setInput('');
     setAttachedFile(null);
   };

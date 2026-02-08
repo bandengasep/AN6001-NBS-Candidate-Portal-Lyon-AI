@@ -77,46 +77,75 @@ async def upload_file(file: UploadFile = File(...)) -> FileExtractResponse:
 
     try:
         if ext == ".pdf":
+            # Try text extraction first
             pdf = pdfplumber.open(io.BytesIO(contents))
             raw_text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+            # Also try extracting tables
+            for page in pdfplumber.open(io.BytesIO(contents)).pages:
+                for table in (page.extract_tables() or []):
+                    for row in table:
+                        cells = [str(c) for c in row if c]
+                        if cells:
+                            raw_text += "\n" + " | ".join(cells)
             pdf.close()
-            if not raw_text.strip():
-                raise HTTPException(status_code=400, detail="Could not extract text from PDF")
-            # Truncate to reasonable length for chat context
-            extracted = raw_text[:3000]
-            return FileExtractResponse(text=extracted, file_type="pdf", filename=file.filename)
+
+            if raw_text.strip() and len(raw_text.strip()) > 50:
+                extracted = raw_text.strip()[:3000]
+                return FileExtractResponse(text=extracted, file_type="pdf", filename=file.filename)
+
+            # Fallback: use GPT vision on the PDF (treat as image-based document)
+            return _extract_with_vision(contents, "application/pdf", file.filename, "pdf")
 
         else:
-            # Image: use GPT vision to describe/extract content
-            settings = get_settings()
-            client = get_openai_client()
-            b64_image = base64.b64encode(contents).decode("utf-8")
+            # Image: use GPT vision
             mime = "image/jpeg" if ext in {".jpg", ".jpeg"} else "image/png"
-
-            response = client.chat.completions.create(
-                model=settings.chat_model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Extract all visible text and data from this image. If it's a transcript or grade sheet, list all courses and grades. If it's a certificate, note the details. Be thorough and structured."
-                    },
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Please extract all text and information from this document image:"},
-                            {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64_image}"}}
-                        ]
-                    }
-                ],
-                max_tokens=1500
-            )
-            extracted = response.choices[0].message.content
-            return FileExtractResponse(text=extracted, file_type="image", filename=file.filename)
+            return _extract_with_vision(contents, mime, file.filename, "image")
 
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+
+def _extract_with_vision(contents: bytes, mime: str, filename: str, file_type: str) -> FileExtractResponse:
+    """Extract content from a file using GPT vision API."""
+    settings = get_settings()
+    client = get_openai_client()
+    b64_data = base64.b64encode(contents).decode("utf-8")
+
+    # For PDFs, GPT vision needs image format -- use the first bytes as-is
+    # GPT vision supports PDF data URLs directly with some models
+    # Fall back to sending as a generic base64 document
+    if mime == "application/pdf":
+        data_url = f"data:application/pdf;base64,{b64_data}"
+    else:
+        data_url = f"data:{mime};base64,{b64_data}"
+
+    response = client.chat.completions.create(
+        model=settings.chat_model,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Extract all visible text, data, and information from this document. "
+                    "If it is a transcript or grade sheet, list all courses, grades, and GPA. "
+                    "If it is a certificate, note the qualification, institution, and date. "
+                    "If it is a CV/resume, extract key details. "
+                    "Be thorough, structured, and concise."
+                )
+            },
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Please extract all text and information from this document:"},
+                    {"type": "image_url", "image_url": {"url": data_url}}
+                ]
+            }
+        ],
+        max_tokens=1500
+    )
+    extracted = response.choices[0].message.content
+    return FileExtractResponse(text=extracted, file_type=file_type, filename=filename)
 
 
 @router.get("/history/{conversation_id}")

@@ -3,13 +3,24 @@ import { LoadingDots } from './LoadingDots';
 
 export function MessageList({ messages, isLoading, messagesEndRef }) {
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-      {messages.map((message) => (
-        <MessageBubble key={message.id} message={message} />
-      ))}
+    <div className="flex-1 overflow-y-auto p-4 space-y-1">
+      {messages.map((message, index) => {
+        // Check if this is a consecutive message from the same role
+        const prevMessage = messages[index - 1];
+        const isConsecutive = prevMessage && prevMessage.role === message.role;
+
+        return (
+          <div key={message.id} className={isConsecutive ? 'mt-0.5' : 'mt-3'}>
+            <MessageBubble
+              message={message}
+              hideAvatar={isConsecutive}
+            />
+          </div>
+        );
+      })}
 
       {isLoading && (
-        <div className="flex justify-start mb-4">
+        <div className="flex justify-start mt-3 mb-4">
           <div className="flex max-w-[85%] lg:max-w-[75%]">
             <div className="flex-shrink-0 mr-3">
               <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
