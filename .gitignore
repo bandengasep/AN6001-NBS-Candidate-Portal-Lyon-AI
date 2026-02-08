@@ -78,3 +78,6 @@ Group Project Guideline.pdf
 
 # MCP Configuration (personal settings)
 .mcp.json
+
+# Git worktrees
+.worktrees/
