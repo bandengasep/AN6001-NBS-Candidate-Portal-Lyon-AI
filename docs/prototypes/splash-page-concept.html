@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBS Candidate Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ── NTU BRAND TOKENS ── */
+  :root {
+    --ntu-red: #E01932;
+    --ntu-red-hover: #C2142A;
+    --ntu-blue: #0071BC;
+    --ntu-gold: #F79320;
+    --ntu-dark: #2D2D2D;
+    --ntu-body: #4A4A4A;
+    --ntu-muted: #888888;
+    --ntu-border: #E5E5E5;
+    --ntu-bg: #FFFFFF;
+    --ntu-bg-alt: #F5F5F5;
+    --ntu-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --ntu-shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+    --container: 1200px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Sans 3', 'Segoe UI', Tahoma, sans-serif;
+    background: var(--ntu-bg);
+    color: var(--ntu-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOP BAR (NTU-style thin bar) ── */
+  .top-bar {
+    background: var(--ntu-dark);
+    padding: 0.4rem 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    font-size: 0.75rem;
+  }
+
+  .top-bar a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .top-bar a:hover { color: white; }
+
+  /* ── HEADER ── */
+  header {
+    background: white;
+    border-bottom: 1px solid var(--ntu-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .header-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0.9rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+    color: var(--ntu-dark);
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* NTU Logo simplified mark */
+  .ntu-mark {
+    width: 40px;
+    height: 40px;
+    position: relative;
+  }
+
+  .ntu-mark svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--ntu-border);
+  }
+
+  .header-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ntu-dark);
+    letter-spacing: -0.01em;
+  }
+
+  .header-subtitle {
+    font-size: 0.72rem;
+    color: var(--ntu-muted);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .header-nav a {
+    color: var(--ntu-body);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: color 0.2s;
+    padding: 0.25rem 0;
+  }
+
+  .header-nav a:hover {
+    color: var(--ntu-red);
+  }
+
+  .header-nav .nav-cta {
+    background: var(--ntu-red);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+  }
+
+  .header-nav .nav-cta:hover {
+    background: var(--ntu-red-hover);
+    color: white;
+  }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2D2D2D 50%, #3a1520 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 50%, rgba(224,25,50,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(0,113,188,0.08) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  /* Subtle diagonal geometric pattern like NTU uses */
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image:
+      linear-gradient(30deg, white 12%, transparent 12.5%, transparent 87%, white 87.5%, white),
+      linear-gradient(150deg, white 12%, transparent 12.5%, transparent 87%, white 87.5%, white),
+      linear-gradient(30deg, white 12%, transparent 12.5%, transparent 87%, white 87.5%, white),
+      linear-gradient(150deg, white 12%, transparent 12.5%, transparent 87%, white 87.5%, white);
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 5rem 2rem 4.5rem;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    min-height: 520px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-text h1 span {
+    color: var(--ntu-gold);
+  }
+
+  .hero-text p {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .btn--red {
+    background: var(--ntu-red);
+    color: white;
+    border-color: var(--ntu-red);
+  }
+
+  .btn--red:hover {
+    background: var(--ntu-red-hover);
+    border-color: var(--ntu-red-hover);
+  }
+
+  .btn--stroke {
+    background: transparent;
+    color: white;
+    border-color: rgba(255,255,255,0.4);
+  }
+
+  .btn--stroke:hover {
+    border-color: white;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Hero right side: two pathway cards */
+  .hero-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pathway-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: block;
+    position: relative;
+  }
+
+  .pathway-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  .pathway-card--active {
+    border-color: var(--ntu-red);
+    background: rgba(224,25,50,0.08);
+  }
+
+  .pathway-card--active:hover {
+    background: rgba(224,25,50,0.12);
+    border-color: var(--ntu-red);
+  }
+
+  .pathway-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .pathway-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .pathway-card--active .pathway-icon {
+    background: var(--ntu-red);
+  }
+
+  .pathway-card:not(.pathway-card--active) .pathway-icon {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .pathway-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .pathway-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .pathway-card--active .pathway-label { color: rgba(255,255,255,0.6); }
+
+  .pathway-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.3rem;
+  }
+
+  .pathway-desc {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+  }
+
+  .pathway-arrow {
+    position: absolute;
+    right: 1.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .pathway-card:hover .pathway-arrow {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(2px);
+  }
+
+  .pathway-arrow svg {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--ntu-bg-alt);
+    border-bottom: 1px solid var(--ntu-border);
+  }
+
+  .stats-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 1.75rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ntu-red);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--ntu-muted);
+    font-weight: 400;
+  }
+
+  /* ── PROGRAMMES SECTION ── */
+  .programmes {
+    padding: 4rem 2rem;
+    max-width: var(--container);
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--ntu-red);
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ntu-dark);
+    line-height: 1.2;
+  }
+
+  .section-title small {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ntu-muted);
+    margin-top: 0.25rem;
+  }
+
+  .view-all {
+    color: var(--ntu-red);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: gap 0.2s;
+    white-space: nowrap;
+  }
+
+  .view-all:hover { gap: 0.5rem; }
+
+  .view-all svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--ntu-red);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* Programme filter tabs */
+  .prog-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-tab {
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--ntu-border);
+    background: white;
+    color: var(--ntu-body);
+    transition: all 0.2s;
+  }
+
+  .prog-tab:hover {
+    border-color: var(--ntu-red);
+    color: var(--ntu-red);
+  }
+
+  .prog-tab--active {
+    background: var(--ntu-red);
+    color: white;
+    border-color: var(--ntu-red);
+  }
+
+  /* Programme grid */
+  .prog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .prog-card {
+    background: white;
+    border: 1px solid var(--ntu-border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: box-shadow 0.25s, transform 0.25s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .prog-card:hover {
+    box-shadow: var(--ntu-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .prog-card-banner {
+    height: 6px;
+    width: 100%;
+  }
+
+  .prog-card-banner--mba { background: var(--ntu-red); }
+  .prog-card-banner--msc { background: var(--ntu-blue); }
+  .prog-card-banner--phd { background: var(--ntu-dark); }
+
+  .prog-card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .prog-type {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .prog-type--mba { color: var(--ntu-red); }
+  .prog-type--msc { color: var(--ntu-blue); }
+  .prog-type--phd { color: var(--ntu-dark); }
+
+  .prog-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ntu-dark);
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+  }
+
+  .prog-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--ntu-muted);
+  }
+
+  .prog-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .prog-details svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--ntu-muted);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ── MEET LYON SECTION ── */
+  .lyon-section {
+    background: var(--ntu-bg-alt);
+    padding: 4rem 2rem;
+  }
+
+  .lyon-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3.5rem;
+    align-items: center;
+  }
+
+  .lyon-info h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ntu-dark);
+    margin-bottom: 0.4rem;
+  }
+
+  .lyon-info .lyon-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ntu-red);
+    background: rgba(224,25,50,0.08);
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    margin-bottom: 1rem;
+  }
+
+  .lyon-info p {
+    color: var(--ntu-body);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .lyon-features {
+    list-style: none;
+    margin-bottom: 2rem;
+  }
+
+  .lyon-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    font-size: 0.88rem;
+    color: var(--ntu-body);
+  }
+
+  .lyon-features li svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--ntu-red);
+    fill: none;
+    stroke-width: 2;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Chat preview */
+  .chat-preview {
+    background: white;
+    border: 1px solid var(--ntu-border);
+    border-radius: 8px;
+    box-shadow: var(--ntu-shadow);
+    overflow: hidden;
+  }
+
+  .chat-header {
+    background: var(--ntu-dark);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .chat-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--ntu-red);
+    display: grid;
+    place-items: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .chat-header-text {
+    flex: 1;
+  }
+
+  .chat-header-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .chat-header-status {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .chat-online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4CAF50;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .chat-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 260px;
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .msg--bot {
+    background: var(--ntu-bg-alt);
+    color: var(--ntu-body);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+
+  .msg--user {
+    background: var(--ntu-red);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+
+  .chat-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--ntu-border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .chat-footer input {
+    flex: 1;
+    border: 1px solid var(--ntu-border);
+    border-radius: 4px;
+    padding: 0.55rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: var(--ntu-body);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .chat-footer input:focus {
+    border-color: var(--ntu-red);
+  }
+
+  .chat-footer input::placeholder {
+    color: var(--ntu-muted);
+  }
+
+  .chat-send {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: var(--ntu-red);
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .chat-send:hover { background: var(--ntu-red-hover); }
+
+  .chat-send svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ntu-dark);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8rem;
+  }
+
+  .footer-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .footer-brand {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-brand-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+  }
+
+  .footer-col h4 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 0.2rem 0;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover { color: white; }
+
+  .footer-bottom {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+  .fade-in-1 { animation-delay: 0.1s; }
+  .fade-in-2 { animation-delay: 0.2s; }
+  .fade-in-3 { animation-delay: 0.3s; }
+  .fade-in-4 { animation-delay: 0.4s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 2rem; min-height: auto; padding: 3.5rem 2rem; }
+    .prog-grid { grid-template-columns: 1fr 1fr; }
+    .lyon-inner { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .prog-grid { grid-template-columns: 1fr; }
+    .header-nav { display: none; }
+    .hero-actions { flex-direction: column; }
+    .footer-bottom { flex-direction: column; gap: 0.5rem; }
+    .stats-inner { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .prog-tabs { gap: 0.35rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="https://www.ntu.edu.sg" target="_blank">NTU Home</a>
+  <a href="https://www.ntu.edu.sg/business" target="_blank">NBS Website</a>
+  <a href="https://www.ntu.edu.sg/business/admissions" target="_blank">Admissions</a>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="header-brand">
+      <div class="header-logo">
+        <div class="ntu-mark">
+          <svg viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="4" fill="#E01932"/>
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="700">NBS</text>
+          </svg>
+        </div>
+      </div>
+      <div class="header-divider"></div>
+      <div>
+        <div class="header-title">Candidate Portal</div>
+        <div class="header-subtitle">Nanyang Business School</div>
+      </div>
+    </a>
+    <ul class="header-nav">
+      <li><a href="#programmes">Programmes</a></li>
+      <li><a href="#lyon">Ask Lyon</a></li>
+      <li><a href="#" class="nav-cta">Get Started</a></li>
+    </ul>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1 class="fade-in fade-in-1">
+        Find the Right<br>NBS Degree <span>for You</span>
+      </h1>
+      <p class="fade-in fade-in-2">
+        Whether you're exploring options or ready to apply, we'll help you
+        navigate NBS graduate programmes with AI-powered recommendations
+        and personalised advice from Lyon, NTU's degree advisor.
+      </p>
+      <div class="hero-actions fade-in fade-in-3">
+        <a href="#" class="btn btn--red">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Get Programme Recommendations
+        </a>
+        <a href="#lyon" class="btn btn--stroke">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Chat with Lyon
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-cards fade-in fade-in-4">
+      <a href="#" class="pathway-card pathway-card--active">
+        <div class="pathway-header">
+          <div class="pathway-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>
+          </div>
+          <div>
+            <div class="pathway-label">Not sure yet?</div>
+            <div class="pathway-title">Upload CV + Take Quiz</div>
+          </div>
+        </div>
+        <div class="pathway-desc">Get matched to NBS programmes based on your background, skills, and career goals. See your fit on a spider chart.</div>
+        <div class="pathway-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="#lyon" class="pathway-card">
+        <div class="pathway-header">
+          <div class="pathway-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="pathway-label">Already decided?</div>
+            <div class="pathway-title">Ask Lyon Directly</div>
+          </div>
+        </div>
+        <div class="pathway-desc">Chat with NTU's AI degree advisor about specific programmes, admissions requirements, and campus life.</div>
+        <div class="pathway-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-number">22</div>
+      <div class="stat-label">Graduate Programmes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">#1</div>
+      <div class="stat-label">Business School in Singapore</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100+</div>
+      <div class="stat-label">Nationalities Represented</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">Triple</div>
+      <div class="stat-label">Accredited (AACSB, EQUIS, AMBA)</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRAMMES -->
+<section class="programmes" id="programmes">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">
+        Graduate Programmes
+        <small>Explore our world-class business education offerings</small>
+      </h2>
+    </div>
+    <a href="#" class="view-all">
+      View all programmes
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="prog-tabs">
+    <button class="prog-tab prog-tab--active">All</button>
+    <button class="prog-tab">MBA</button>
+    <button class="prog-tab">MSc</button>
+    <button class="prog-tab">PhD</button>
+    <button class="prog-tab">Executive</button>
+  </div>
+
+  <div class="prog-grid">
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--mba"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--mba">MBA</div>
+        <div class="prog-name">Nanyang MBA</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full-time
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--msc"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--msc">MSc</div>
+        <div class="prog-name">MSc Business Analytics</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full-time
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--msc"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--msc">MSc</div>
+        <div class="prog-name">MSc Financial Engineering</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full-time
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--msc"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--msc">MSc</div>
+        <div class="prog-name">MSc Marketing Science</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full-time
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--mba"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--mba">Executive MBA</div>
+        <div class="prog-name">Nanyang Executive MBA</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            18 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Part-time
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="prog-card">
+      <div class="prog-card-banner prog-card-banner--msc"></div>
+      <div class="prog-card-body">
+        <div class="prog-type prog-type--msc">MSc</div>
+        <div class="prog-name">MSc Accountancy</div>
+        <div class="prog-details">
+          <span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12 months
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full-time
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- MEET LYON -->
+<section class="lyon-section" id="lyon">
+  <div class="lyon-inner">
+    <div class="lyon-info">
+      <div class="lyon-badge">AI-Powered Advisor</div>
+      <h2>Meet Lyon, Your NBS Degree Advisor</h2>
+      <p>
+        NTU's lion mascot knows NBS inside out. Ask about programme details,
+        admission requirements, career outcomes, or get help comparing
+        programmes. Available 24/7.
+      </p>
+      <ul class="lyon-features">
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          Search across all 22 NBS graduate programmes
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          Compare programmes side by side
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          Get answers on admissions, fees, and deadlines
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          Friendly Singaporean personality with a lion's heart
+        </li>
+      </ul>
+      <a href="#" class="btn btn--red">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Start Chatting with Lyon
+      </a>
+    </div>
+
+    <div class="chat-preview">
+      <div class="chat-header">
+        <div class="chat-avatar">L</div>
+        <div class="chat-header-text">
+          <div class="chat-header-name">Lyon</div>
+          <div class="chat-header-status">NBS Degree Advisor</div>
+        </div>
+        <div class="chat-online-dot"></div>
+      </div>
+      <div class="chat-body">
+        <div class="msg msg--bot">
+          Hey! Welcome to NBS. I'm Lyon, NTU's resident lion. What programme are you eyeing?
+        </div>
+        <div class="msg msg--user">
+          What's the difference between MBA and EMBA?
+        </div>
+        <div class="msg msg--bot">
+          Good question lah! The Nanyang MBA is 12 months full-time -- perfect for a career switch. The EMBA is 18 months part-time, designed for senior leaders who want to keep working. Want me to compare them side by side?
+        </div>
+      </div>
+      <div class="chat-footer">
+        <input type="text" placeholder="Ask Lyon anything..." disabled>
+        <button class="chat-send" disabled>
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Nanyang Business School</div>
+      <div class="footer-brand-sub">
+        Nanyang Technological University, Singapore<br>
+        50 Nanyang Avenue, Singapore 639798<br><br>
+        AN6001 AI and Big Data Group Project
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="https://www.ntu.edu.sg/business" target="_blank">NBS Website</a>
+      <a href="https://www.ntu.edu.sg/business/admissions" target="_blank">Admissions</a>
+      <a href="https://www.ntu.edu.sg/business/admissions/graduate-studies" target="_blank">Graduate Studies</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#">Programme Finder</a>
+      <a href="#">Chat with Lyon</a>
+      <a href="#">FAQs</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Nanyang Technological University. All rights reserved.</span>
+    <span>Powered by AI</span>
+  </div>
+</footer>
+
+</body>
+</html>
