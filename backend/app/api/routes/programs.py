@@ -28,3 +28,12 @@ async def get_programs_by_type(degree_type: str, supabase: SupabaseDep) -> list[
     """Get programs by degree type (MBA, MSc, PhD, etc.)."""
     result = supabase.table("programs").select("*").ilike("degree_type", f"%{degree_type}%").execute()
     return [Program(**p) for p in result.data] if result.data else []
+
+
+@router.get("/{program_id}/profile")
+async def get_program_profile(program_id: str, supabase: SupabaseDep) -> dict:
+    """Get a programme's spider chart profile scores."""
+    result = supabase.table("programs").select("name, profile_scores").eq("id", program_id).single().execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Program not found")
+    return result.data
