@@ -57,9 +57,9 @@ def parse_args() -> argparse.Namespace:
         help="Only scrape programmes whose name/slug contains this string (case-insensitive).",
     )
     parser.add_argument(
-        "--no-pdfs",
+        "--with-pdfs",
         action="store_true",
-        help="Skip PDF download and extraction.",
+        help="Enable PDF download and extraction (off by default; most brochures are form-gated).",
     )
     parser.add_argument(
         "--dry-run",
@@ -92,16 +92,22 @@ def clean_database():
     print("Cleaning database...")
     client = get_supabase_admin_client()
 
-    # Delete all documents
-    client.table("documents").delete().neq("id", 0).execute()
+    # Delete all documents (filter with a nil UUID that matches nothing)
+    _NIL_UUID = "00000000-0000-0000-0000-000000000000"
+    client.table("documents").delete().neq("id", _NIL_UUID).execute()
     print("  -> Deleted all rows from 'documents'")
 
     # Delete all programmes
     try:
-        client.table("programs").delete().neq("id", 0).execute()
+        client.table("programs").delete().neq("id", _NIL_UUID).execute()
         print("  -> Deleted all rows from 'programs'")
     except Exception as e:
-        logger.warning("Could not clean 'programs' table: %s", e)
+        # programs table may use integer id – fall back
+        try:
+            client.table("programs").delete().neq("id", 0).execute()
+            print("  -> Deleted all rows from 'programs'")
+        except Exception as e2:
+            logger.warning("Could not clean 'programs' table: %s", e2)
 
 
 def _extract_degree_type(entry: ProgrammeEntry) -> str:
@@ -235,7 +241,7 @@ async def main():
     print(f"NBS Deep Scraper + Ingest")
     print(f"=" * 60)
     print(f"Programmes to scrape: {len(registry)}")
-    print(f"PDF extraction: {'OFF' if args.no_pdfs else 'ON'}")
+    print(f"PDF extraction: {'ON' if args.with_pdfs else 'OFF'}")
     print(f"Dry run: {'YES' if args.dry_run else 'NO'}")
     print(f"=" * 60)
 
@@ -245,7 +251,7 @@ async def main():
 
     # Scrape
     pdf_dir = str(Path(__file__).parent.parent / "data" / "pdfs")
-    with NBSDeepScraper(skip_pdfs=args.no_pdfs, pdf_download_dir=pdf_dir) as scraper:
+    with NBSDeepScraper(skip_pdfs=not args.with_pdfs, pdf_download_dir=pdf_dir) as scraper:
         results = scraper.scrape_all(registry)
 
     # Ingest

@@ -28,7 +28,8 @@ def chunk_text(
     if chunk_overlap is None:
         chunk_overlap = settings.chunk_overlap
 
-    # Clean text
+    # Clean text - strip null bytes (PostgreSQL rejects \u0000)
+    text = text.replace("\x00", "")
     text = re.sub(r'\s+', ' ', text).strip()
 
     if len(text) <= chunk_size:

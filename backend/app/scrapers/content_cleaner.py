@@ -189,7 +189,11 @@ def clean_pdf_text(raw_text: str) -> str:
 
 
 def extract_pdf_links(soup: BeautifulSoup, base_url: str) -> list[str]:
-    """Find PDF download links in a page.
+    """Find direct PDF download links in a page.
+
+    Only matches links whose href ends with ``.pdf`` (direct downloads).
+    Form-gated brochure pages (e.g. HubSpot forms) are deliberately
+    excluded because they cannot be downloaded programmatically.
 
     Args:
         soup: BeautifulSoup parsed page
@@ -198,31 +202,26 @@ def extract_pdf_links(soup: BeautifulSoup, base_url: str) -> list[str]:
     Returns:
         List of absolute PDF URLs
     """
+    from urllib.parse import urlparse
+
     pdf_urls: list[str] = []
 
     for a in soup.find_all("a", href=True):
         href = a["href"]
-        text = a.get_text(strip=True).lower()
 
-        is_pdf = (
-            href.lower().endswith(".pdf")
-            or "brochure" in text
-            or "factsheet" in text
-            or "fact-sheet" in text
-            or "download" in text and ("brochure" in href.lower() or "pdf" in href.lower())
-        )
+        # Only match direct .pdf file links
+        if not href.split("?")[0].lower().endswith(".pdf"):
+            continue
 
-        if is_pdf:
-            # Resolve relative URLs
-            if href.startswith("/"):
-                from urllib.parse import urlparse
-                parsed = urlparse(base_url)
-                href = f"{parsed.scheme}://{parsed.netloc}{href}"
-            elif not href.startswith("http"):
-                href = base_url.rstrip("/") + "/" + href
+        # Resolve relative URLs
+        if href.startswith("/"):
+            parsed = urlparse(base_url)
+            href = f"{parsed.scheme}://{parsed.netloc}{href}"
+        elif not href.startswith("http"):
+            href = base_url.rstrip("/") + "/" + href
 
-            if href not in pdf_urls:
-                pdf_urls.append(href)
+        if href not in pdf_urls:
+            pdf_urls.append(href)
 
     return pdf_urls
 
