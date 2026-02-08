@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     chunk_overlap: int = 200
     retrieval_k: int = 4
 
+    # Timeout settings (seconds) - tuned for Vercel hobby plan 10s limit
+    agent_timeout: int = 8
+    agent_max_steps: int = 6
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
