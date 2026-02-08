@@ -1,8 +1,12 @@
 """FastAPI application entry point."""
 
+import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from pathlib import Path
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.db.models import HealthResponse
@@ -50,6 +54,21 @@ def create_app() -> FastAPI:
     async def health_check() -> HealthResponse:
         """Check API health status."""
         return HealthResponse()
+
+    # Serve frontend static files (Vercel deployment)
+    # The build copies frontend/dist/* to static/ at the project root
+    static_dir = Path(__file__).resolve().parent.parent.parent / "static"
+    if static_dir.is_dir():
+        # Serve static assets (JS, CSS, images)
+        app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="static-assets")
+
+        # SPA fallback: serve index.html for all non-API, non-asset routes
+        @app.get("/{path:path}")
+        async def spa_fallback(request: Request, path: str):
+            index_file = static_dir / "index.html"
+            if index_file.exists():
+                return FileResponse(str(index_file), media_type="text/html")
+            return HTMLResponse("Not Found", status_code=404)
 
     return app
 
