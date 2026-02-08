@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
     # Model settings
     embedding_model: str = "text-embedding-3-small"
-    chat_model: str = "gpt-4o"
+    chat_model: str = "gpt-5.2"
     embedding_dimensions: int = 1536
 
     # RAG settings
