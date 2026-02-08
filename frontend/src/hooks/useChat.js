@@ -86,15 +86,15 @@ export function useChat() {
       setMessages([{
         id: 0,
         role: 'assistant',
-        content: `Hello! I'm the NBS Degree Advisor, your AI assistant for information about Nanyang Business School programmes.
+        content: `Hey! Welcome to NBS. I'm Lyon, NTU's resident lion and your degree advisor.
 
 I can help you with:
-- **Programme Information**: MBA, EMBA, MSc programmes, PhD, and Bachelor degrees
-- **Admission Requirements**: Entry criteria, deadlines, and application process
-- **Programme Comparisons**: Compare different programmes to find your best fit
-- **General Questions**: Rankings, scholarships, career services, and more
+- **Programme Info**: MBA, MSc, PhD, Executive programmes
+- **Admissions**: Requirements, deadlines, how to apply
+- **Comparisons**: Compare programmes side by side
+- **General Questions**: Rankings, scholarships, campus life
 
-How can I assist you today?`,
+What programme are you eyeing?`,
         timestamp: new Date().toISOString(),
       }]);
     }
