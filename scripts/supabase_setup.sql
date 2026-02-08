@@ -65,6 +65,9 @@ returns table (
 language plpgsql
 as $$
 begin
+  -- Increase IVFFlat probe count for better recall on large datasets
+  set local ivfflat.probes = 10;
+
   return query
   select
     documents.id,

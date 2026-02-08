@@ -29,14 +29,16 @@ def create_rag_tool():
             Relevant information from the knowledge base
         """
         try:
-            documents = await retrieve_relevant_documents(query, match_count=4)
+            # Fetch a wide candidate set to work around pgvector HNSW
+            # approximate index misses, then return top 8 to the LLM.
+            documents = await retrieve_relevant_documents(query, match_count=80)
 
             if not documents:
                 return "No relevant information found in the knowledge base. Please try rephrasing your question or ask about specific NBS programs."
 
-            # Format results
+            # Format top 8 results (already sorted by similarity)
             results = []
-            for i, doc in enumerate(documents, 1):
+            for i, doc in enumerate(documents[:8], 1):
                 content = doc.get("content", "")
                 metadata = doc.get("metadata", {})
                 program = metadata.get("program", "NBS")
