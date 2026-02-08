@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     # App settings
     debug: bool = False
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    cors_origins: str = "http://localhost:5173,http://localhost:3000,https://*.vercel.app"
 
     # Model settings
     embedding_model: str = "text-embedding-3-small"
