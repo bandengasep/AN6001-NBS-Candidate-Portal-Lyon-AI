@@ -6,47 +6,83 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree Advisor Chatbot** with **Agentic AI** capabilities. The project demonstrates RAG (Retrieval-Augmented Generation), agentic tool use, and conversational AI in an educational context.
 
-**Current Implementation**: NBS Degree Advisor - An AI-powered chatbot that helps prospective students learn about Nanyang Business School programs using LangChain agents and vector similarity search.
+**Current Implementation**: NBS Candidate Portal - A multi-page web application with AI-powered programme recommendations, a chatbot advisor (Lyon), and a programme browser.
 
 **Original Project Concept** (for reference): The initial guideline proposed a banking web application, but the current implementation focuses on the NBS degree advisor as a practical demonstration of agentic AI capabilities.
 
 **Key Features Implemented**:
-- RAG-powered chatbot for NBS program information
+- Multi-page Candidate Portal (Splash, Recommend, Chat, Programmes)
+- Programme Recommendation Wizard (CV upload + 7-question quiz + spider chart)
+- RAG-powered chatbot (Lyon) for NBS programme information
 - Agentic AI with tool use (search, compare, FAQ)
+- Spider chart profile matching via embedding similarity
+- Programme browser with filter tabs
 - Vector similarity search using Supabase pgvector
 - Conversation history and context management
-- Program comparison capabilities
-- Modern responsive UI with NBS branding
+- Programme comparison capabilities
+- Modern responsive UI with NTU branding
 
 ## Technology Stack (Current Implementation)
 
-**Frontend**: React 18 + Vite + Tailwind CSS
+**Frontend**: React 18 + Vite + Tailwind CSS + react-router-dom + chart.js
 **Backend**: FastAPI (Python 3.11+)
 **Database**: Supabase (PostgreSQL + pgvector extension)
 **Vector Store**: Supabase pgvector for RAG
 **AI Models**:
-- GPT-4o for conversational AI
+- GPT-5.2 for conversational AI and CV parsing
 - text-embedding-3-small (1536 dimensions) for embeddings
 **Agent Framework**: LangChain for agentic capabilities
+**Deployment**: Vercel (static frontend + serverless Python backend)
 
 ## Project Structure (Current)
 
 ```
+/api              - Vercel serverless entry point
 /backend          - FastAPI application with LangChain agents
   /app
-    /api/routes   - REST API endpoints (chat, programs)
+    /api/routes   - REST API endpoints (chat, programs, recommend)
     /agents       - LangChain agent and tools (RAG, compare, FAQ)
     /rag          - RAG pipeline (embeddings, retriever, ingestion)
     /db           - Supabase client and utilities
   /data/scraped   - Scraped NBS program data
 /frontend         - React + Vite application
   /src
-    /components   - React components (Chat, Layout, Messages)
+    /pages        - Route pages (SplashPage, RecommendPage, ChatPage, ProgrammesPage)
+    /components
+      /Chat       - Chat UI components
+      /Charts     - SpiderChart radar component
+      /Layout     - TopBar, PortalHeader, Header, Sidebar, Footer
+      /Recommend  - CVUpload, QuizStep, Results
     /hooks        - Custom React hooks (useChat)
-    /services     - API client
-/scripts          - Utility scripts (scraping, ingestion, DB setup)
+    /services     - API client (chat, programs, recommend)
+/scripts          - Utility scripts (scraping, ingestion, DB setup, seeding)
 /data/scraped     - Primary scraped content (all_programs.json)
+/docs/plans       - Design docs and implementation plans
+/docs/prototypes  - HTML prototypes
 ```
+
+## Frontend Routes
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | SplashPage | Landing page with hero, programme grid, Lyon teaser |
+| `/recommend` | RecommendPage | CV upload + 7-question quiz + spider chart results |
+| `/chat` | ChatPage | Lyon chatbot (supports `?programme=X` query param) |
+| `/programmes` | ProgrammesPage | Programme browser with filter tabs |
+
+## Backend API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/programs/` | List all programmes |
+| GET | `/api/programs/{id}` | Get programme by ID |
+| GET | `/api/programs/{id}/profile` | Get spider chart profile scores |
+| GET | `/api/programs/type/{type}` | Filter programmes by degree type |
+| POST | `/api/chat/` | Send chat message to Lyon |
+| GET | `/api/chat/history/{id}` | Get conversation history |
+| POST | `/api/recommend/parse-cv` | Upload + parse PDF CV |
+| POST | `/api/recommend/match` | Match quiz answers to programmes |
+| GET | `/health` | Health check |
 
 ## Development Commands
 
@@ -213,6 +249,18 @@ When implementing features, research:
 
 ## Recent Updates & Improvements
 
+### February 8, 2026 - Candidate Portal
+- **Multi-page Portal**: Added react-router-dom with 4 routes (splash, recommend, chat, programmes)
+- **Splash Page**: NTU-styled landing page with hero section, programme grid, Lyon teaser
+- **Recommendation Wizard**: CV upload (pdfplumber + GPT extraction) + 7-question quiz + spider chart
+- **Programme Browser**: Full programme listing with filter tabs (All, MBA, MSc, PhD, Executive)
+- **Chat Restyle**: Updated chat page with NTU layout, Lyon welcome message, `?programme=X` deep linking
+- **Spider Chart**: chart.js radar component for profile comparison
+- **Backend Endpoints**: CV parsing (`/recommend/parse-cv`), matching (`/recommend/match`), profile scores (`/programs/{id}/profile`)
+- **Database**: Added `profile_scores` jsonb column to programs table
+- **Vercel Deployment**: Config for static frontend + serverless Python backend
+- **NTU Brand Colors**: Updated Tailwind config with full NTU color palette
+
 ### February 1, 2026
 1. **Fixed Admissions Link** (`frontend/src/components/Layout/Header.jsx:31`)
    - Updated to: `https://www.ntu.edu.sg/business/admissions`
@@ -229,7 +277,7 @@ When implementing features, research:
 - **Environment**: `backend/.env` (contains API keys - DO NOT commit)
 - **Vector DB**: Supabase with pgvector extension
 - **Embedding Model**: text-embedding-3-small (1536 dimensions)
-- **Chat Model**: GPT-4o (configurable in `backend/app/config.py`)
+- **Chat Model**: GPT-5.2 (configurable in `backend/app/config.py`)
 
 ## Version Control
 
