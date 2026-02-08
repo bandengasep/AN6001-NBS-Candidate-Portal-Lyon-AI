@@ -1,0 +1,27 @@
+{
+  "name": "Bachelor of Business",
+  "slug": "bachelor-business",
+  "category": "undergraduate",
+  "language": "en",
+  "url": "https://www.ntu.edu.sg/business/admissions/ugadmission",
+  "is_external": false,
+  "title": "NBS Undergraduate Programmes | Nanyang Business School | NTU Singapore",
+  "description": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+  "sections": {},
+  "sub_pages": {
+    "nbsgloballeaders": {
+      "url": "https://www.ntu.edu.sg/honours-college/signature-programmes/nbs-global-leaders-programme",
+      "title": "NBS Global Leaders Programme",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    },
+    "undergraduate-programmes": {
+      "url": "https://www.ntu.edu.sg/business/admissions/ugadmission/undergraduate-programmes",
+      "title": "Undergraduate Programmes Admissions | Nanyang Business School | NTU Singapore",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    }
+  },
+  "pdf_contents": [],
+  "structured_data": {}
+}

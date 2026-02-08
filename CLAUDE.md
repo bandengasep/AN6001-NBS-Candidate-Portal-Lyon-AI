@@ -138,13 +138,13 @@ npm run dev
 # 1. Set up Supabase database (run SQL in Supabase dashboard)
 # See: scripts/supabase_setup.sql
 
-# 2. Scrape NBS website data (optional - sample data included)
-"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/scrape_nbs.py
+# 2. Deep-scrape NBS website (all 22 programmes, sub-pages, PDFs)
+"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/deep_scrape.py
 
 # 3. Ingest data into vector store (REQUIRED for chatbot to work)
 "/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/ingest_data.py
 
-# Expected output: ~36 document chunks ingested from 9 programs
+# Expected output: ~1,400+ document chunks ingested from 22 programmes
 ```
 
 ## Key Project Requirements
@@ -248,6 +248,13 @@ When implementing features, research:
 - Security standards for banking applications
 
 ## Recent Updates & Improvements
+
+### February 9, 2026 - Lyon Hardening & Data Enrichment
+- **System Prompt Hardening**: Added topic fencing (NBS-only whitelist), off-topic rejection (polite redirects), and anti-prompt-injection rules to Lyon's system prompt
+- **Deep Scraper**: Created `scripts/deep_scrape.py` runner that crawls all 22 programmes via `NBSDeepScraper` (landing pages, sub-pages like `/admissions`, `/faqs`, `/curriculum`, and PDF brochures)
+- **Data Enrichment**: Re-ingested 1,400+ document chunks (up from ~36) covering tuition fees, deadlines, admissions details, career outcomes, scholarships for all programmes
+- **MSBA Tuition Fees**: Now in vector store (AY2026: $71,940 total inclusive of GST)
+- **Ingestion Pipeline**: Updated `scripts/ingest_data.py` to prefer deep-scraped data and clear old documents before re-ingesting
 
 ### February 8, 2026 - Candidate Portal
 - **Multi-page Portal**: Added react-router-dom with 4 routes (splash, recommend, chat, programmes)

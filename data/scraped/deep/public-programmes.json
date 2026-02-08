@@ -1,0 +1,39 @@
+{
+  "name": "Public Programmes for Professionals",
+  "slug": "public-programmes",
+  "category": "executive_education",
+  "language": "en",
+  "url": "https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals",
+  "is_external": false,
+  "title": "Be empowered to lead in the green and digital economy",
+  "description": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+  "sections": {},
+  "sub_pages": {
+    "leadership": {
+      "url": "https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals/leadership",
+      "title": "Leadership and Management Development Courses",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    },
+    "sustainability": {
+      "url": "https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals/sustainability",
+      "title": "Sustainability & ESG Executive Programmes for the Green Economy",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    },
+    "finance-and-valuation": {
+      "url": "https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals/finance-and-valuation",
+      "title": "Finance and Valuation",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    },
+    "digital-transformation": {
+      "url": "https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals/digital-transformation",
+      "title": "Digital Transformation",
+      "content": "Scam Alert:\nFake email on ‘Tuition Fee Outstanding Payment’ is circulating at other institutions\n. Unsure? Call ScamShield 1799 anytime or check\nscamshield.gov.sg\nto stay safe.",
+      "sections": {}
+    }
+  },
+  "pdf_contents": [],
+  "structured_data": {}
+}

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Script to ingest scraped NBS data into Supabase vector store."""
+"""Script to ingest scraped NBS data into Supabase vector store.
+
+Prefers deep-scraped data (data/scraped/deep/all_programs_deep.json) when
+available, falling back to the legacy all_programs.json.
+"""
 
 import asyncio
 import json
@@ -16,6 +20,17 @@ env_path = Path(__file__).parent.parent / "backend" / ".env"
 load_dotenv(env_path)
 
 from app.rag.ingestion import ingest_documents, ingest_program_data
+from app.db.supabase import get_supabase_admin_client
+
+
+async def clear_documents():
+    """Delete all existing documents from the vector store."""
+    client = get_supabase_admin_client()
+    # Delete all rows (Supabase requires a filter, so use a tautology)
+    result = client.table("documents").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+    count = len(result.data) if result.data else 0
+    print(f"Cleared {count} existing documents from vector store")
+    return count
 
 
 async def ingest_programs_from_json(json_path: Path) -> int:
@@ -83,17 +98,31 @@ async def main():
     print("=" * 50)
 
     data_dir = Path(__file__).parent.parent / "data" / "scraped"
+    deep_json = data_dir / "deep" / "all_programs_deep.json"
+    legacy_json = data_dir / "all_programs.json"
     total = 0
 
-    # Ingest programs from JSON
-    programs_json = data_dir / "all_programs.json"
-    if programs_json.exists():
+    # Determine which data source to use
+    if deep_json.exists():
+        programs_json = deep_json
+        print(f"Using deep-scraped data: {deep_json}")
+    elif legacy_json.exists():
+        programs_json = legacy_json
+        print(f"Deep-scraped data not found, using legacy: {legacy_json}")
+    else:
+        programs_json = None
+        print("No programs file found.")
+        print("Run deep_scrape.py first to scrape programme data")
+
+    if programs_json:
+        # Clear old documents before re-ingesting
+        print("\nClearing existing vector store...")
+        await clear_documents()
+
+        print(f"\nIngesting programmes from {programs_json.name}...")
         count = await ingest_programs_from_json(programs_json)
         total += count
-        print(f"\nIngested {count} documents from programs")
-    else:
-        print(f"No programs file found at {programs_json}")
-        print("Run scrape_nbs.py first to scrape program data")
+        print(f"\nIngested {count} documents from programmes")
 
     # Ingest additional content if present
     additional_count = await ingest_additional_content(data_dir)

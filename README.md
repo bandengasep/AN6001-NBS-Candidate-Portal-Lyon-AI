@@ -122,7 +122,8 @@ The application runs on:
 │       └── services/    API integration (chat, programs, recommend)
 │
 ├── scripts/             Utility scripts
-│   ├── scrape_nbs.py    Web scraping for programme data
+│   ├── deep_scrape.py   Deep web scraping (all sub-pages + PDFs)
+│   ├── scrape_nbs.py    Legacy web scraping
 │   ├── ingest_data.py   Vector database ingestion
 │   └── supabase_setup.sql  Database schema
 │
@@ -134,14 +135,15 @@ The application runs on:
 ## Core Capabilities
 
 ### RAG (Retrieval-Augmented Generation)
-- Semantic search over NBS program data using vector embeddings
-- Context-aware responses grounded in official program information
-- Configurable similarity thresholds for retrieval precision
+- Deep-scraped data from all 22 NBS programme pages (landing pages, sub-pages, PDFs)
+- 1,400+ vector-embedded document chunks covering tuition fees, admissions, curriculum, career outcomes
+- Semantic search using Supabase pgvector with configurable similarity thresholds
 
 ### Agentic AI
 - LangChain-based agent with autonomous tool selection
 - Multi-step reasoning for complex queries
 - Tools: knowledge search, program comparison, FAQ lookup
+- Topic-fenced system prompt with off-topic rejection and prompt injection protection
 
 ### API Design
 The REST API provides endpoints for chat interaction, conversation history, and program data retrieval. Full API documentation is available via FastAPI's automatic OpenAPI interface.

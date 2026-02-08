@@ -70,6 +70,9 @@ htmlcov/
 data/scraped/*.json
 !data/scraped/all_programs.json
 
+# Downloaded PDFs (binary, re-downloadable via deep scraper)
+data/pdfs/
+
 # Reference/Sample Data
 University Education Data Files/
 
