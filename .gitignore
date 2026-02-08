@@ -81,3 +81,4 @@ Group Project Guideline.pdf
 
 # Git worktrees
 .worktrees/
+.vercel

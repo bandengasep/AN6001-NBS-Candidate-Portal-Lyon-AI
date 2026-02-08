@@ -258,8 +258,22 @@ When implementing features, research:
 - **Spider Chart**: chart.js radar component for profile comparison
 - **Backend Endpoints**: CV parsing (`/recommend/parse-cv`), matching (`/recommend/match`), profile scores (`/programs/{id}/profile`)
 - **Database**: Added `profile_scores` jsonb column to programs table
-- **Vercel Deployment**: Config for static frontend + serverless Python backend
+- **Vercel Deployment**: Deployed to production at https://nbs-candidate-portal.vercel.app
 - **NTU Brand Colors**: Updated Tailwind config with full NTU color palette
+
+### February 8, 2026 - Vercel Deployment
+- **Production URL**: https://nbs-candidate-portal.vercel.app
+- **Project**: nbs-candidate-portal (team: timothy-hartantos-projects)
+- **GitHub Integration**: Connected to bandengasep/AN6001-NBS-Candidate-Portal-Lyon-AI
+- **Fixes applied for deployment**:
+  - Removed `@rollup/rollup-win32-x64-msvc` from frontend `package.json` (platform-specific, breaks Linux builds)
+  - Build command deletes `package-lock.json` before install (prevents Windows lockfile conflicts)
+  - Removed `functions` block from `vercel.json` (Vercel auto-detects FastAPI)
+  - Trimmed root `requirements.txt`: removed `langchain-community`, `langgraph`, `mangum`, `aiofiles` (not imported, exceeded 250MB limit)
+- **Environment Variables**: Must be set in Vercel dashboard (Project Settings > Environment Variables) for backend to work:
+  - `OPENAI_API_KEY`
+  - `SUPABASE_URL`
+  - `SUPABASE_KEY`
 
 ### February 1, 2026
 1. **Fixed Admissions Link** (`frontend/src/components/Layout/Header.jsx:31`)
