@@ -1,41 +1,17 @@
-import { Header } from './components/Layout/Header';
-import { Sidebar } from './components/Layout/Sidebar';
-import { ChatContainer } from './components/Chat/ChatContainer';
-import { useChat } from './hooks/useChat';
+import { Routes, Route } from 'react-router-dom';
+import SplashPage from './pages/SplashPage';
+import RecommendPage from './pages/RecommendPage';
+import ChatPage from './pages/ChatPage';
+import ProgrammesPage from './pages/ProgrammesPage';
 
 function App() {
-  const {
-    messages,
-    isLoading,
-    error,
-    messagesEndRef,
-    sendMessage,
-    clearChat,
-  } = useChat();
-
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <Header />
-
-      {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar with quick questions */}
-        <Sidebar onQuestionClick={sendMessage} />
-
-        {/* Chat area */}
-        <main className="flex-1 flex flex-col">
-          <ChatContainer
-            messages={messages}
-            isLoading={isLoading}
-            error={error}
-            messagesEndRef={messagesEndRef}
-            onSendMessage={sendMessage}
-            onClearChat={clearChat}
-          />
-        </main>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<SplashPage />} />
+      <Route path="/recommend" element={<RecommendPage />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/programmes" element={<ProgrammesPage />} />
+    </Routes>
   );
 }
 
