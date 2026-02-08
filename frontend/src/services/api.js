@@ -109,4 +109,18 @@ export async function getProgramProfile(programId) {
   return response.data;
 }
 
+/**
+ * Upload a file (PDF/image) for text extraction in chat context
+ * @param {File} file - PDF, JPG, or PNG file
+ * @returns {Promise<{text: string, file_type: string, filename: string}>}
+ */
+export async function uploadChatFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await api.post('/chat/upload-file', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+
 export default api;
