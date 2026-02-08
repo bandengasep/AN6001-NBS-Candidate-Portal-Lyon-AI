@@ -7,7 +7,7 @@ from pathlib import Path
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
-from app.scrapers.nbs_scraper import scrape_nbs_programs
+from app.scrapers.nbs_scraper_legacy import scrape_nbs_programs
 
 
 def main():

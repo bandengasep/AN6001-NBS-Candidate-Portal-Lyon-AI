@@ -146,6 +146,8 @@ async def ingest_program_data(program: dict) -> int:
 
     Args:
         program: Program data dict with name, description, etc.
+            Supports both legacy format (flat dict) and new deep-scraper
+            format with sub_pages and pdf_contents.
 
     Returns:
         Number of documents ingested
@@ -153,14 +155,21 @@ async def ingest_program_data(program: dict) -> int:
     texts = []
     metadatas = []
 
+    # Common metadata fields
+    base_meta = {
+        "program": program["name"],
+        "degree_type": program.get("degree_type", ""),
+        "category": program.get("category", ""),
+        "language": program.get("language", "en"),
+    }
+
     # Main program description
     if program.get("description"):
         texts.append(f"{program['name']}: {program['description']}")
         metadatas.append({
+            **base_meta,
             "type": "program_description",
-            "program": program["name"],
-            "degree_type": program.get("degree_type", ""),
-            "url": program.get("url", "")
+            "source_url": program.get("url", ""),
         })
 
     # Requirements
@@ -172,19 +181,17 @@ async def ingest_program_data(program: dict) -> int:
             req_text += str(program["requirements"])
         texts.append(req_text)
         metadatas.append({
+            **base_meta,
             "type": "requirements",
-            "program": program["name"],
-            "degree_type": program.get("degree_type", "")
         })
 
-    # Additional content sections
+    # Additional content sections (legacy keys)
     for key in ["curriculum", "career_outcomes", "faculty", "admissions"]:
         if program.get(key):
             texts.append(f"{program['name']} {key.replace('_', ' ').title()}: {program[key]}")
             metadatas.append({
+                **base_meta,
                 "type": key,
-                "program": program["name"],
-                "degree_type": program.get("degree_type", "")
             })
 
     # Process sections dictionary if present
@@ -193,10 +200,53 @@ async def ingest_program_data(program: dict) -> int:
             if section_content and section_content.strip():
                 texts.append(f"{program['name']} - {section_name}: {section_content}")
                 metadatas.append({
+                    **base_meta,
                     "type": "section",
                     "section_name": section_name,
-                    "program": program["name"],
-                    "degree_type": program.get("degree_type", "")
                 })
+
+    # ── New deep-scraper fields ──────────────────────────────────────
+
+    # Sub-pages: dict keyed by sub-page type (e.g. "admissions", "faqs")
+    if program.get("sub_pages") and isinstance(program["sub_pages"], dict):
+        for sub_page_type, sub_page in program["sub_pages"].items():
+            content = sub_page.get("content", "") if isinstance(sub_page, dict) else str(sub_page)
+            if not content or not content.strip():
+                continue
+            texts.append(f"{program['name']} - {sub_page_type}: {content}")
+            metadatas.append({
+                **base_meta,
+                "type": "sub_page",
+                "sub_page": sub_page_type,
+                "source_url": sub_page.get("url", "") if isinstance(sub_page, dict) else "",
+            })
+
+            # Also ingest sub-page sections
+            if isinstance(sub_page, dict) and sub_page.get("sections"):
+                for sec_name, sec_content in sub_page["sections"].items():
+                    if sec_content and sec_content.strip():
+                        texts.append(
+                            f"{program['name']} - {sub_page_type} - {sec_name}: {sec_content}"
+                        )
+                        metadatas.append({
+                            **base_meta,
+                            "type": "sub_page_section",
+                            "sub_page": sub_page_type,
+                            "section_name": sec_name,
+                            "source_url": sub_page.get("url", ""),
+                        })
+
+    # PDF contents
+    if program.get("pdf_contents") and isinstance(program["pdf_contents"], list):
+        for pdf in program["pdf_contents"]:
+            text = pdf.get("text", "") if isinstance(pdf, dict) else str(pdf)
+            if not text or not text.strip():
+                continue
+            texts.append(f"{program['name']} (PDF Brochure): {text}")
+            metadatas.append({
+                **base_meta,
+                "type": "pdf_brochure",
+                "source_url": pdf.get("source_url", "") if isinstance(pdf, dict) else "",
+            })
 
     return await ingest_documents(texts, metadatas)
