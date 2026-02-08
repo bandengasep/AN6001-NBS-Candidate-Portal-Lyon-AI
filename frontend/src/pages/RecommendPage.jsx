@@ -140,6 +140,7 @@ export default function RecommendPage() {
                 userScores={matchResult.user_scores}
                 matches={matchResult.matches}
                 onRetake={handleRetake}
+                cvData={cvData}
               />
             )}
           </div>

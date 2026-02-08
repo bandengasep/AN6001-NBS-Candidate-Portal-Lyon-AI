@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SpiderChart } from '../Charts/SpiderChart';
 
 /**
@@ -8,7 +8,28 @@ import { SpiderChart } from '../Charts/SpiderChart';
  * @param {Array} props.matches - Top 3 matched programmes from API
  * @param {Function} props.onRetake - Restart the quiz
  */
-export function Results({ userScores, matches, onRetake }) {
+export function Results({ userScores, matches, onRetake, cvData }) {
+  const navigate = useNavigate();
+
+  function handleAskLyon(match) {
+    // Store recommendation context so Lyon can reference it
+    sessionStorage.setItem('recommendContext', JSON.stringify({
+      programme: match.name,
+      matchScore: Math.round(match.similarity * 100),
+      userScores,
+      programmeScores: match.profile_scores,
+      cvSummary: cvData ? {
+        industry: cvData.industry,
+        yearsExperience: cvData.years_experience,
+        educationLevel: cvData.education_level,
+        skills: cvData.skills,
+        quantitativeBackground: cvData.quantitative_background,
+        leadershipExperience: cvData.leadership_experience,
+      } : null,
+    }));
+    navigate(`/chat?programme=${encodeURIComponent(match.name)}`);
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold text-ntu-dark mb-2">Your Programme Recommendations</h2>
@@ -59,10 +80,10 @@ export function Results({ userScores, matches, onRetake }) {
                       Visit NBS Page
                     </a>
                   )}
-                  <Link to={`/chat?programme=${encodeURIComponent(match.name)}`}
-                        className="px-4 py-2 text-xs bg-ntu-red text-white rounded hover:bg-ntu-red-hover transition-colors">
+                  <button onClick={() => handleAskLyon(match)}
+                          className="px-4 py-2 text-xs bg-ntu-red text-white rounded hover:bg-ntu-red-hover transition-colors">
                     Ask Lyon About This
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
