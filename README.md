@@ -1,46 +1,67 @@
-# NBS Degree Advisor Chatbot
+# NBS Candidate Portal
 
-An AI-powered conversational agent for Nanyang Business School that demonstrates advanced RAG (Retrieval-Augmented Generation) and agentic AI capabilities. This project showcases practical applications of large language models in educational contexts.
+An AI-powered candidate portal for Nanyang Business School that demonstrates advanced RAG (Retrieval-Augmented Generation) and agentic AI capabilities. This project showcases practical applications of large language models in educational contexts.
 
 **AN6001 AI and Big Data Group Project** | Nanyang Technological University
 
+**Live at**: https://nbs-candidate-portal.vercel.app
+
 ## Overview
 
-This chatbot provides intelligent assistance to prospective students exploring NBS degree programs. Using a combination of vector similarity search, LangChain agents, and GPT-4o, it delivers contextually relevant information through natural conversation.
+The NBS Candidate Portal is a multi-page web application that helps prospective students explore NBS degree programmes. It features an AI-powered recommendation wizard, a chatbot advisor (Lyon), and a programme browser. Using vector similarity search, LangChain agents, and GPT-5.2, it delivers contextually relevant information through natural conversation.
 
 ## Key Features
 
+- **Programme Recommendation Wizard**: Upload your CV + answer a 7-question quiz to get personalised programme matches with a spider chart profile comparison
+- **Lyon AI Chatbot**: NTU's lion mascot as your NBS degree advisor, with file upload support (PDF/JPG/PNG)
+- **Programme Browser**: Browse all 22 NBS programmes with filter tabs and direct links
 - **Agentic AI Architecture**: Autonomous tool selection and multi-step reasoning using LangChain agents
 - **RAG Pipeline**: Retrieval-augmented generation with vector embeddings for accurate, grounded responses
-- **Program Intelligence**: Compare degree programs, answer FAQs, and provide detailed program information
-- **Conversation Management**: Stateful dialogue with context preservation across sessions
-- **Modern Stack**: FastAPI backend, React frontend, Supabase vector database
+- **Programme Comparison**: Side-by-side analysis of degree options via the chatbot
+- **Modern Stack**: FastAPI backend, React frontend, Supabase vector database, Vercel deployment
+
+## Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Splash Page | NTU-styled landing page with hero, programme grid, Lyon teaser |
+| `/recommend` | Recommendation Wizard | CV upload + 7-question quiz + spider chart results |
+| `/chat` | Lyon Chatbot | AI chatbot with file upload support |
+| `/programmes` | Programme Browser | All 22 programmes with filter tabs |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────┐
-│   Frontend (React + Vite)       │
-│   • Chat Interface              │
-│   • Program Explorer            │
-└────────────┬────────────────────┘
+┌─────────────────────────────────────┐
+│   Frontend (React + Vite + Tailwind)│
+│   • Splash Page & Programme Grid    │
+│   • Recommendation Wizard           │
+│   • Lyon Chatbot (file upload)      │
+│   • Programme Browser               │
+└────────────┬────────────────────────┘
              │ REST API
              ▼
-┌─────────────────────────────────┐
-│   Backend (FastAPI)             │
-│   ┌───────────────────────┐     │
-│   │  LangChain Agent      │     │
-│   │  • RAG Tool           │     │
-│   │  • Compare Tool       │     │
-│   │  • FAQ Tool           │     │
-│   └───────────────────────┘     │
-│             │                   │
-│   ┌─────────┴─────────┐         │
-│   │  Data Layer       │         │
-│   │  • Supabase       │         │
-│   │  • OpenAI API     │         │
-│   └───────────────────┘         │
-└─────────────────────────────────┘
+┌─────────────────────────────────────┐
+│   Backend (FastAPI)                 │
+│   ┌───────────────────────┐        │
+│   │  LangChain Agent      │        │
+│   │  • RAG Search Tool    │        │
+│   │  • Compare Tool       │        │
+│   │  • FAQ Tool           │        │
+│   └───────────────────────┘        │
+│   ┌───────────────────────┐        │
+│   │  Recommendation Engine│        │
+│   │  • CV Parser (GPT)    │        │
+│   │  • Embedding Matching │        │
+│   │  • Spider Chart Scores│        │
+│   └───────────────────────┘        │
+│             │                      │
+│   ┌─────────┴─────────┐           │
+│   │  Data Layer       │            │
+│   │  • Supabase       │            │
+│   │  • OpenAI API     │            │
+│   └───────────────────┘            │
+└─────────────────────────────────────┘
 ```
 
 ## Technology Stack
@@ -48,18 +69,23 @@ This chatbot provides intelligent assistance to prospective students exploring N
 **Backend**
 - FastAPI for high-performance async API
 - LangChain for agentic workflow orchestration
-- OpenAI GPT-4o for language generation
+- OpenAI GPT-5.2 for language generation and CV parsing
 - text-embedding-3-small for semantic search (1536 dimensions)
 
 **Frontend**
-- React 18 with modern hooks
+- React 18 with react-router-dom
 - Vite for fast development and optimized builds
 - Tailwind CSS for responsive UI
+- chart.js for spider chart visualisation
 
 **Data Layer**
 - Supabase (PostgreSQL + pgvector extension)
 - Vector similarity search for RAG retrieval
-- Structured program data storage
+- Structured programme data with profile scores
+
+**Deployment**
+- Vercel (static frontend + serverless Python backend)
+- Frontend served from FastAPI via StaticFiles mount
 
 ## Getting Started
 
@@ -71,32 +97,38 @@ Detailed setup instructions are available in `CLAUDE.md` for development purpose
 4. **Launch Services**: Start FastAPI backend and React frontend
 
 The application runs on:
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000`
-- API Documentation: `http://localhost:8000/docs`
+- **Production**: https://nbs-candidate-portal.vercel.app
+- **Local Frontend**: `http://localhost:5173`
+- **Local Backend API**: `http://localhost:8000`
+- **API Documentation**: `http://localhost:8000/docs`
 
 ## Project Structure
 
 ```
-├── backend/              FastAPI application with LangChain agents
+├── api/                 Vercel serverless entry point
+│   └── index.py         FastAPI app loader
+├── backend/             FastAPI application with LangChain agents
 │   ├── app/
 │   │   ├── agents/      Agent orchestration and tool definitions
 │   │   ├── rag/         RAG pipeline (embeddings, retrieval)
-│   │   ├── api/routes/  REST API endpoints
+│   │   ├── api/routes/  REST API endpoints (chat, programs, recommend)
 │   │   └── db/          Database models and utilities
 │
 ├── frontend/            React application
 │   └── src/
-│       ├── components/  UI components
+│       ├── pages/       Route pages (Splash, Recommend, Chat, Programmes)
+│       ├── components/  UI components (Chat, Charts, Layout, Recommend)
 │       ├── hooks/       Custom React hooks
-│       └── services/    API integration
+│       └── services/    API integration (chat, programs, recommend)
 │
 ├── scripts/             Utility scripts
-│   ├── scrape_nbs.py   Web scraping for program data
-│   ├── ingest_data.py  Vector database ingestion
+│   ├── scrape_nbs.py    Web scraping for programme data
+│   ├── ingest_data.py   Vector database ingestion
 │   └── supabase_setup.sql  Database schema
 │
-└── data/scraped/        Source program data
+├── data/scraped/        Source programme data
+├── static/              Frontend build output (served by FastAPI on Vercel)
+└── vercel.json          Vercel deployment configuration
 ```
 
 ## Core Capabilities
@@ -116,10 +148,11 @@ The REST API provides endpoints for chat interaction, conversation history, and 
 
 ## Use Cases
 
-- **Prospective Students**: Explore NBS programs through natural conversation
-- **Program Comparison**: Side-by-side analysis of degree options
+- **Prospective Students**: Explore NBS programmes through the recommendation wizard or natural conversation with Lyon
+- **Programme Comparison**: Side-by-side analysis of degree options via the chatbot
+- **CV-Based Matching**: Upload a CV to get personalised programme recommendations
 - **FAQ Automation**: Instant answers to common admissions questions
-- **Educational Demo**: Showcase practical applications of RAG and agentic AI
+- **Educational Demo**: Showcase practical applications of RAG, agentic AI, and embedding-based matching
 
 ## Development
 

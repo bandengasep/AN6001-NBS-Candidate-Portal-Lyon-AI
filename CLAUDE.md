@@ -265,15 +265,26 @@ When implementing features, research:
 - **Production URL**: https://nbs-candidate-portal.vercel.app
 - **Project**: nbs-candidate-portal (team: timothy-hartantos-projects)
 - **GitHub Integration**: Connected to bandengasep/AN6001-NBS-Candidate-Portal-Lyon-AI
+- **Deployment architecture**: Vercel auto-detects FastAPI and routes ALL requests through the Python serverless function. Frontend is served from FastAPI using `StaticFiles` mount + SPA catch-all route. Build copies `frontend/dist/*` to `static/`.
 - **Fixes applied for deployment**:
   - Removed `@rollup/rollup-win32-x64-msvc` from frontend `package.json` (platform-specific, breaks Linux builds)
   - Build command deletes `package-lock.json` before install (prevents Windows lockfile conflicts)
-  - Removed `functions` block from `vercel.json` (Vercel auto-detects FastAPI)
+  - Removed `functions` block from `vercel.json` (Vercel auto-detects FastAPI, explicit patterns cause errors)
   - Trimmed root `requirements.txt`: removed `langchain-community`, `langgraph`, `mangum`, `aiofiles` (not imported, exceeded 250MB limit)
-- **Environment Variables**: Must be set in Vercel dashboard (Project Settings > Environment Variables) for backend to work:
+  - Added `python-multipart` to `requirements.txt` (required by FastAPI `UploadFile` at import time)
+  - Frontend served from FastAPI via `StaticFiles` mount (`/assets`) + SPA catch-all fallback (`backend/app/main.py`)
+- **Environment Variables** (set via `vercel env add`):
   - `OPENAI_API_KEY`
   - `SUPABASE_URL`
   - `SUPABASE_KEY`
+  - `SUPABASE_SERVICE_KEY`
+  - `CORS_ORIGINS`
+- **Key Vercel lessons**:
+  - `outputDirectory`, `rewrites`, `routes` configs are all ignored when FastAPI auto-detection is active
+  - `framework: null` or `framework: "vite"` causes double Python dep install, exceeding 250MB limit
+  - Solution: let FastAPI auto-detection handle routing, serve frontend from within the FastAPI app itself
+  - Vercel MCP `deploy_to_vercel` tool is a no-op; use Vercel CLI (`vercel --yes --prod`) instead
+  - Vercel MCP tools are useful for reading deployment info (logs, status, projects), not triggering deploys
 
 ### February 1, 2026
 1. **Fixed Admissions Link** (`frontend/src/components/Layout/Header.jsx:31`)
