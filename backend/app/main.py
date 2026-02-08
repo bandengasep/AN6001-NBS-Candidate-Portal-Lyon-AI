@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.db.models import HealthResponse
-from app.api.routes import programs, chat
+from app.api.routes import programs, chat, recommend
 
 
 @asynccontextmanager
@@ -43,6 +43,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(programs.router, prefix="/api")
     app.include_router(chat.router, prefix="/api")
+    app.include_router(recommend.router, prefix="/api")
 
     # Health check endpoint
     @app.get("/health", response_model=HealthResponse, tags=["health"])
