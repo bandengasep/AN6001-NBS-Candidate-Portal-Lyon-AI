@@ -25,14 +25,36 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', 'backend', '.env'))
 from supabase import create_client
 
 PROFILE_SCORES = {
+    # MBA programmes
     "Nanyang MBA": {
         "quantitative": 3, "experience": 4, "leadership": 5,
         "tech_analytics": 3, "business_domain": 1, "career_ambition": 4, "study_flexibility": 2
     },
-    "Executive MBA": {
+    "Nanyang Executive MBA": {
         "quantitative": 3, "experience": 5, "leadership": 5,
         "tech_analytics": 2, "business_domain": 1, "career_ambition": 4, "study_flexibility": 4
     },
+    "Nanyang Executive MBA Singapore (Chinese)": {
+        "quantitative": 3, "experience": 5, "leadership": 5,
+        "tech_analytics": 2, "business_domain": 1, "career_ambition": 4, "study_flexibility": 4
+    },
+    "Nanyang-SJTU Executive MBA (Chinese)": {
+        "quantitative": 3, "experience": 5, "leadership": 5,
+        "tech_analytics": 2, "business_domain": 1, "career_ambition": 4, "study_flexibility": 4
+    },
+    "Nanyang Professional MBA": {
+        "quantitative": 3, "experience": 4, "leadership": 4,
+        "tech_analytics": 3, "business_domain": 1, "career_ambition": 4, "study_flexibility": 4
+    },
+    "Nanyang Fellows MBA": {
+        "quantitative": 3, "experience": 3, "leadership": 4,
+        "tech_analytics": 3, "business_domain": 1, "career_ambition": 4, "study_flexibility": 2
+    },
+    "NTU IMBA (Vietnam)": {
+        "quantitative": 3, "experience": 3, "leadership": 3,
+        "tech_analytics": 3, "business_domain": 1, "career_ambition": 3, "study_flexibility": 2
+    },
+    # MSc programmes
     "MSc Business Analytics": {
         "quantitative": 5, "experience": 2, "leadership": 2,
         "tech_analytics": 5, "business_domain": 4, "career_ambition": 3, "study_flexibility": 2
@@ -49,17 +71,52 @@ PROFILE_SCORES = {
         "quantitative": 4, "experience": 2, "leadership": 2,
         "tech_analytics": 3, "business_domain": 2, "career_ambition": 3, "study_flexibility": 2
     },
-    "MSc Asset & Wealth Management": {
+    "MSc Asset and Wealth Management": {
         "quantitative": 4, "experience": 3, "leadership": 3,
         "tech_analytics": 3, "business_domain": 3, "career_ambition": 3, "study_flexibility": 2
     },
+    "MSc Finance": {
+        "quantitative": 4, "experience": 2, "leadership": 2,
+        "tech_analytics": 3, "business_domain": 3, "career_ambition": 3, "study_flexibility": 2
+    },
+    "MSc Blockchain": {
+        "quantitative": 5, "experience": 2, "leadership": 2,
+        "tech_analytics": 5, "business_domain": 4, "career_ambition": 3, "study_flexibility": 2
+    },
+    "MSc Actuarial and Risk Analytics": {
+        "quantitative": 5, "experience": 2, "leadership": 2,
+        "tech_analytics": 4, "business_domain": 3, "career_ambition": 3, "study_flexibility": 2
+    },
+    "NTU-PKU Double Masters in Finance": {
+        "quantitative": 4, "experience": 2, "leadership": 2,
+        "tech_analytics": 3, "business_domain": 3, "career_ambition": 3, "study_flexibility": 2
+    },
+    "Master in Management": {
+        "quantitative": 3, "experience": 2, "leadership": 2,
+        "tech_analytics": 2, "business_domain": 1, "career_ambition": 2, "study_flexibility": 2
+    },
+    "Executive Master of Science in Sustainability Management": {
+        "quantitative": 3, "experience": 4, "leadership": 3,
+        "tech_analytics": 2, "business_domain": 2, "career_ambition": 3, "study_flexibility": 4
+    },
+    # PhD
     "PhD in Business": {
         "quantitative": 5, "experience": 2, "leadership": 2,
         "tech_analytics": 4, "business_domain": 5, "career_ambition": 5, "study_flexibility": 1
     },
+    # Bachelor
     "Bachelor of Business": {
         "quantitative": 2, "experience": 1, "leadership": 2,
         "tech_analytics": 2, "business_domain": 1, "career_ambition": 1, "study_flexibility": 1
+    },
+    # Professional
+    "FlexiMasters": {
+        "quantitative": 2, "experience": 3, "leadership": 2,
+        "tech_analytics": 2, "business_domain": 2, "career_ambition": 2, "study_flexibility": 5
+    },
+    "Public Programmes for Professionals": {
+        "quantitative": 2, "experience": 3, "leadership": 2,
+        "tech_analytics": 2, "business_domain": 2, "career_ambition": 2, "study_flexibility": 5
     },
 }
 
