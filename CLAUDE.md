@@ -249,6 +249,13 @@ When implementing features, research:
 
 ## Recent Updates & Improvements
 
+### February 9, 2026 - P0 Health Fixes
+- **Python Version Pinned**: Added `.python-version` with `3.12` to prevent Vercel from upgrading Python unexpectedly
+- **Agent Timeout Protection**: Wrapped `agent.ainvoke()` with `asyncio.timeout(8)` in `nbs_agent.py` -- gives 2s margin before Vercel's 10s serverless hard kill
+- **Recursion Limit**: Added `recursion_limit=6` to agent invocation config to cap tool-call loops on complex queries
+- **Graceful Timeout Handling**: `TimeoutError` caught separately, returns friendly "try a simpler question" message instead of raw 504 Gateway Timeout
+- **Configurable Settings**: `agent_timeout` and `agent_max_steps` added to `config.py`, overridable via environment variables
+
 ### February 9, 2026 - Lyon Hardening & Data Enrichment
 - **System Prompt Hardening**: Added topic fencing (NBS-only whitelist), off-topic rejection (polite redirects), and anti-prompt-injection rules to Lyon's system prompt
 - **Deep Scraper**: Created `scripts/deep_scrape.py` runner that crawls all 22 programmes via `NBSDeepScraper` (landing pages, sub-pages like `/admissions`, `/faqs`, `/curriculum`, and PDF brochures)
