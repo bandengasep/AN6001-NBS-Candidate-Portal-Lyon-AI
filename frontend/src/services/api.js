@@ -75,4 +75,38 @@ export async function healthCheck() {
   return response.data;
 }
 
+/**
+ * Upload and parse a CV (PDF)
+ * @param {File} file - PDF file
+ * @returns {Promise<{years_experience, industry, education_level, skills, quantitative_background, leadership_experience, raw_text}>}
+ */
+export async function parseCV(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await api.post('/recommend/parse-cv', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+
+/**
+ * Get programme recommendations based on quiz answers
+ * @param {Object} answers - Quiz answers with scores per axis
+ * @returns {Promise<{user_scores, matches}>}
+ */
+export async function getRecommendations(answers) {
+  const response = await api.post('/recommend/match', answers);
+  return response.data;
+}
+
+/**
+ * Get a programme's spider chart profile
+ * @param {string} programId
+ * @returns {Promise<{name, profile_scores}>}
+ */
+export async function getProgramProfile(programId) {
+  const response = await api.get(`/programs/${programId}/profile`);
+  return response.data;
+}
+
 export default api;
