@@ -137,7 +137,7 @@ The application runs on:
 ### RAG (Retrieval-Augmented Generation)
 - Deep-scraped data from all 22 NBS programme pages (landing pages, sub-pages, PDFs)
 - 1,400+ vector-embedded document chunks covering tuition fees, admissions, curriculum, career outcomes
-- Semantic search using Supabase pgvector with configurable similarity thresholds
+- Semantic search using Supabase pgvector with tuned IVFFlat index (`probes=10`) for high recall
 
 ### Agentic AI
 - LangChain-based agent with autonomous tool selection

@@ -255,6 +255,7 @@ When implementing features, research:
 - **Data Enrichment**: Re-ingested 1,400+ document chunks (up from ~36) covering tuition fees, deadlines, admissions details, career outcomes, scholarships for all programmes
 - **MSBA Tuition Fees**: Now in vector store (AY2026: $71,940 total inclusive of GST)
 - **Ingestion Pipeline**: Updated `scripts/ingest_data.py` to prefer deep-scraped data and clear old documents before re-ingesting
+- **pgvector IVFFlat Fix**: Default `probes=1` caused approximate index to miss top-similarity chunks. Applied `SET LOCAL ivfflat.probes = 10` in `match_documents` SQL function via Supabase migration. RAG tool also over-fetches 80 candidates and returns top 8 as a safety net
 
 ### February 8, 2026 - Candidate Portal
 - **Multi-page Portal**: Added react-router-dom with 4 routes (splash, recommend, chat, programmes)
