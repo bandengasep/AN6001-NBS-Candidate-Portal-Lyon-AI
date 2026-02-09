@@ -86,9 +86,9 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 
 ## Development Commands
 
-Once the project is set up, typical commands will include:
+See `/memory/MEMORY.md` for environment setup, deployment gotchas, and operational lessons.
 
-**Python Environment:** Use the nbs-msba conda environment for all Python operations:
+**Python Environment:**
 ```bash
 "/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" <script>.py
 ```
@@ -96,42 +96,17 @@ Once the project is set up, typical commands will include:
 **Backend (FastAPI)**:
 ```bash
 cd backend
-"/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" -m uvicorn app.main:app --reload --port 8000
-
-# Or using the conda environment directly:
 uvicorn app.main:app --reload --port 8000
-
-# Run tests (if available):
-pytest tests/
+pytest tests/  # Run tests (when available)
 ```
 
-**Frontend (if using Node.js-based tooling)**:
+**Frontend (React + Vite)**:
 ```bash
-npm install                      # Install dependencies
-npm run dev                      # Development server
-npm run build                    # Production build
-npm test                         # Run tests
-```
-
-### Troubleshooting: Rollup Module Error on Windows
-
-If you encounter this error when running `npm run dev`:
-```
-Error: Cannot find module @rollup/rollup-win32-x64-msvc
-```
-
-This is a known npm bug with optional dependencies. **Solution:**
-
-```cmd
 cd frontend
-rmdir /s /q node_modules
-del package-lock.json
-npm cache clean --force
-npm install
-npm run dev
+npm install       # Install dependencies
+npm run dev       # Development server
+npm run build     # Production build
 ```
-
-**Important:** Always run `npm install` and `npm run dev` from the same environment (both Windows CMD/PowerShell OR both WSL, not mixed). Platform-specific binaries like rollup require matching environments.
 
 **Database & Data Ingestion**:
 ```bash
@@ -146,41 +121,6 @@ npm run dev
 
 # Expected output: ~1,400+ document chunks ingested from 22 programmes
 ```
-
-## Key Project Requirements
-
-**Must-Have Features**:
-1. **Customer Support System**: AI chatbot that can transition to human support with feedback collection
-2. **Dashboard**: Real-time financial updates, alerts, news, stock prices, account movements
-3. **User Authentication**: Secure login/logout functionality
-4. **Responsive Design**: Mobile, tablet, and desktop compatibility
-5. **AI Integration**: Personalized content generation using appropriate models
-
-**Suggested Features** (from guideline):
-- Personalized financial advice
-- Interactive financial planning tools
-- Digital wallets
-- Peer-to-peer lending
-- Micro-investment platforms
-- Live chat with seamless AI-to-human handoff
-- FAQ section
-
-## AI Model Integration Strategy
-
-**For Text/Conversation**:
-- Use GPT-based models for chatbot, financial advice, content generation
-- Consider Claude for more nuanced financial conversations
-- Implement proper prompt engineering for banking context
-
-**For Images**:
-- Use DALL-E or Stable Diffusion for marketing materials, personalized visuals
-- Consider financial compliance when generating images
-
-**API Integration Considerations**:
-- Manage rate limits and costs
-- Implement caching for repeated queries
-- Handle API failures gracefully
-- Keep API keys in environment variables (never commit)
 
 ## Agentic AI Implementation
 
@@ -197,131 +137,33 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 - Context-aware responses using conversation history
 - Autonomous tool selection based on query type
 
-## Development Phases
-
-**Phase 1: Setup & Core Infrastructure**
-- Set up Flask backend with basic routing
-- Implement user authentication
-- Set up database with user and transaction schemas
-- Create basic frontend structure
-
-**Phase 2: AI Integration**
-- Integrate chatbot with GPT/Claude API
-- Implement prompt templates for banking scenarios
-- Add context management for conversations
-- Build AI-to-human handoff logic
-
-**Phase 3: Dashboard & Features**
-- Real-time financial data integration
-- Alert system for account movements
-- Personalized content generation
-- Interactive financial tools
-
-**Phase 4: Testing & Refinement**
-- User testing sessions
-- Performance optimization
-- Security hardening
-- Documentation completion
-
-## Ethical Considerations
-
-**Critical Requirements**:
-- Data privacy compliance (handle sensitive financial data securely)
-- Transparent AI usage (users should know when interacting with AI)
-- Bias mitigation in financial advice
-- Secure storage of user credentials and financial information
-- Clear terms of service and privacy policy
-
-## Project Deliverables
-
-1. **Presentation Slides** (10-15 slides): Findings, recommendations, demo
-2. **Code Repository**: All programming scripts
-3. **Data**: Any datasets used (anonymized)
-4. **Documentation**: Setup instructions, API documentation, architecture diagrams
-
-## Research & Literature Review
-
-When implementing features, research:
-- Existing fintech AI applications (e.g., Bank of America's Erica, Capital One's Eno)
-- Best practices for AI in financial services
-- Regulatory requirements for financial applications
-- Security standards for banking applications
+**Configuration**:
+- Model call budget: 6 LLM calls per conversation turn (cost control)
+- Recursion limit: 25 graph steps (allows multi-tool workflows)
+- See `backend/app/config.py` for settings
 
 ## Recent Updates & Improvements
 
-### February 9, 2026 - Agent Recursion Limit Fix
-- **Separated recursion_limit from model call budget**: Previously conflated LangGraph execution steps with LLM call budget
-- **Root cause**: `recursion_limit=6` only allowed 6 graph super-steps (barely 2 tool calls), causing "Recursion limit reached" errors on complex queries
-- **Solution**:
-  - Increased `recursion_limit` to 25 (allows multi-step agentic workflows)
-  - Added `ModelCallLimitMiddleware(run_limit=6)` for proper LLM call budget control
-  - Renamed `agent_max_steps` → `agent_max_model_calls` for clarity
-- Agent can now handle complex queries requiring multiple tool calls (search + compare + FAQ) without hitting limits
+### February 9, 2026 - Reliability Fixes
+- **Agent recursion limit fix**: Separated LangGraph execution steps (recursion_limit=25) from LLM call budget (ModelCallLimitMiddleware, run_limit=6). Enables multi-tool workflows without hitting limits
+- **Python version pinning**: Added `.python-version` with `3.12` to prevent Vercel upgrade surprises
+- **Timeout removal**: Removed aggressive 8s asyncio.timeout that was failing all chat responses
+- **Prompt hardening**: Added topic fencing, off-topic rejection, and anti-injection rules to Lyon
 
-### February 9, 2026 - P0 Health Fixes
-- **Python Version Pinned**: Added `.python-version` with `3.12` to prevent Vercel from upgrading Python unexpectedly
-- **Removed asyncio.timeout**: The 8s timeout was too aggressive and caused all chat responses to fail with "took too long" error. Vercel's own 10s serverless hard kill is sufficient as a safety net
+### February 9, 2026 - Data Enrichment
+- **Deep scraper**: `scripts/deep_scrape.py` crawls all 22 programmes (landing + sub-pages + PDFs)
+- **Vector store expansion**: Re-ingested 1,400+ document chunks (from 36) covering tuition, admissions, deadlines, scholarships, career outcomes
+- **pgvector IVFFlat fix**: Applied `probes=10` in `match_documents` SQL function to prevent approximate index from missing high-similarity chunks
 
-### February 9, 2026 - Lyon Hardening & Data Enrichment
-- **System Prompt Hardening**: Added topic fencing (NBS-only whitelist), off-topic rejection (polite redirects), and anti-prompt-injection rules to Lyon's system prompt
-- **Deep Scraper**: Created `scripts/deep_scrape.py` runner that crawls all 22 programmes via `NBSDeepScraper` (landing pages, sub-pages like `/admissions`, `/faqs`, `/curriculum`, and PDF brochures)
-- **Data Enrichment**: Re-ingested 1,400+ document chunks (up from ~36) covering tuition fees, deadlines, admissions details, career outcomes, scholarships for all programmes
-- **MSBA Tuition Fees**: Now in vector store (AY2026: $71,940 total inclusive of GST)
-- **Ingestion Pipeline**: Updated `scripts/ingest_data.py` to prefer deep-scraped data and clear old documents before re-ingesting
-- **pgvector IVFFlat Fix**: Default `probes=1` caused approximate index to miss top-similarity chunks. Applied `SET LOCAL ivfflat.probes = 10` in `match_documents` SQL function via Supabase migration. RAG tool also over-fetches 80 candidates and returns top 8 as a safety net
+### February 8, 2026 - Candidate Portal Launch
+- **Multi-page portal**: 4 routes (splash, recommend, chat, programmes)
+- **Recommendation wizard**: CV upload (pdfplumber + GPT) + 7-question quiz + spider chart matching
+- **Programme browser**: Filter tabs, NTU branding, Lyon integration
+- **Vercel deployment**: Live at https://nbs-candidate-portal.vercel.app (FastAPI serves frontend via StaticFiles)
 
-### February 8, 2026 - Candidate Portal
-- **Multi-page Portal**: Added react-router-dom with 4 routes (splash, recommend, chat, programmes)
-- **Splash Page**: NTU-styled landing page with hero section, programme grid, Lyon teaser
-- **Recommendation Wizard**: CV upload (pdfplumber + GPT extraction) + 7-question quiz + spider chart
-- **Programme Browser**: Full programme listing with filter tabs (All, MBA, MSc, PhD, Executive)
-- **Chat Restyle**: Updated chat page with NTU layout, Lyon welcome message, `?programme=X` deep linking
-- **Spider Chart**: chart.js radar component for profile comparison
-- **Backend Endpoints**: CV parsing (`/recommend/parse-cv`), matching (`/recommend/match`), profile scores (`/programs/{id}/profile`)
-- **Database**: Added `profile_scores` jsonb column to programs table
-- **Vercel Deployment**: Deployed to production at https://nbs-candidate-portal.vercel.app
-- **NTU Brand Colors**: Updated Tailwind config with full NTU color palette
-
-### February 8, 2026 - Vercel Deployment
-- **Production URL**: https://nbs-candidate-portal.vercel.app
-- **Project**: nbs-candidate-portal (team: timothy-hartantos-projects)
-- **GitHub Integration**: Connected to bandengasep/AN6001-NBS-Candidate-Portal-Lyon-AI
-- **Deployment architecture**: Vercel auto-detects FastAPI and routes ALL requests through the Python serverless function. Frontend is served from FastAPI using `StaticFiles` mount + SPA catch-all route. Build copies `frontend/dist/*` to `static/`.
-- **Fixes applied for deployment**:
-  - Removed `@rollup/rollup-win32-x64-msvc` from frontend `package.json` (platform-specific, breaks Linux builds)
-  - Build command deletes `package-lock.json` before install (prevents Windows lockfile conflicts)
-  - Removed `functions` block from `vercel.json` (Vercel auto-detects FastAPI, explicit patterns cause errors)
-  - Trimmed root `requirements.txt`: removed `langchain-community`, `langgraph`, `mangum`, `aiofiles` (not imported, exceeded 250MB limit)
-  - Added `python-multipart` to `requirements.txt` (required by FastAPI `UploadFile` at import time)
-  - Frontend served from FastAPI via `StaticFiles` mount (`/assets`) + SPA catch-all fallback (`backend/app/main.py`)
-- **Environment Variables** (set via `vercel env add`):
-  - `OPENAI_API_KEY`
-  - `SUPABASE_URL`
-  - `SUPABASE_KEY`
-  - `SUPABASE_SERVICE_KEY`
-  - `CORS_ORIGINS`
-- **Key Vercel lessons**:
-  - `outputDirectory`, `rewrites`, `routes` configs are all ignored when FastAPI auto-detection is active
-  - `framework: null` or `framework: "vite"` causes double Python dep install, exceeding 250MB limit
-  - Solution: let FastAPI auto-detection handle routing, serve frontend from within the FastAPI app itself
-  - Vercel MCP `deploy_to_vercel` tool is a no-op; use Vercel CLI (`vercel --yes --prod`) instead
-  - Vercel MCP tools are useful for reading deployment info (logs, status, projects), not triggering deploys
-
-### February 1, 2026
-1. **Fixed Admissions Link** (`frontend/src/components/Layout/Header.jsx:31`)
-   - Updated to: `https://www.ntu.edu.sg/business/admissions`
-
-2. **Fixed Empty/Generic Chatbot Responses**
-   - **Root Cause**: Database was not populated with program data
-   - **Solution**:
-     - Ran data ingestion script: 36 document chunks ingested
-     - Updated `backend/app/rag/ingestion.py` to process "sections" field
-     - Lowered similarity threshold from 0.7 → 0.5 in `backend/app/rag/retriever.py`
-   - **Result**: Chatbot now returns detailed, relevant answers
-
-### Key Configuration Files
-- **Environment**: `backend/.env` (contains API keys - DO NOT commit)
-- **Vector DB**: Supabase with pgvector extension
+### Key Configuration
+- **Environment**: `backend/.env` (API keys - DO NOT commit)
+- **Vector DB**: Supabase (PostgreSQL + pgvector), project: `wgaehtbuwqzegrfvbrna`
 - **Embedding Model**: text-embedding-3-small (1536 dimensions)
 - **Chat Model**: GPT-5.2 (configurable in `backend/app/config.py`)
 
