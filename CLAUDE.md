@@ -251,10 +251,9 @@ When implementing features, research:
 
 ### February 9, 2026 - P0 Health Fixes
 - **Python Version Pinned**: Added `.python-version` with `3.12` to prevent Vercel from upgrading Python unexpectedly
-- **Agent Timeout Protection**: Wrapped `agent.ainvoke()` with `asyncio.timeout(8)` in `nbs_agent.py` -- gives 2s margin before Vercel's 10s serverless hard kill
 - **Recursion Limit**: Added `recursion_limit=6` to agent invocation config to cap tool-call loops on complex queries
-- **Graceful Timeout Handling**: `TimeoutError` caught separately, returns friendly "try a simpler question" message instead of raw 504 Gateway Timeout
-- **Configurable Settings**: `agent_timeout` and `agent_max_steps` added to `config.py`, overridable via environment variables
+- **Configurable Settings**: `agent_max_steps` added to `config.py`, overridable via environment variable
+- **Removed asyncio.timeout**: The 8s timeout was too aggressive and caused all chat responses to fail with "took too long" error. Vercel's own 10s serverless hard kill is sufficient as a safety net
 
 ### February 9, 2026 - Lyon Hardening & Data Enrichment
 - **System Prompt Hardening**: Added topic fencing (NBS-only whitelist), off-topic rejection (polite redirects), and anti-prompt-injection rules to Lyon's system prompt

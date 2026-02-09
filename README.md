@@ -145,7 +145,7 @@ The application runs on:
 - Multi-step reasoning for complex queries
 - Tools: knowledge search, program comparison, FAQ lookup
 - Topic-fenced system prompt with off-topic rejection and prompt injection protection
-- Timeout protection (8s) and recursion limits (6 steps) for serverless reliability
+- Recursion limits (6 steps) for serverless reliability
 
 ### API Design
 The REST API provides endpoints for chat interaction, conversation history, and program data retrieval. Full API documentation is available via FastAPI's automatic OpenAPI interface.

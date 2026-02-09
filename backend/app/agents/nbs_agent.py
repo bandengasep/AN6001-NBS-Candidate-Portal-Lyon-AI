@@ -1,6 +1,5 @@
 """Main NBS Advisor Agent using LangChain."""
 
-import asyncio
 import uuid
 from typing import Any
 from langchain_openai import ChatOpenAI
@@ -136,8 +135,7 @@ class NBSAdvisorAgent:
         except Exception:
             pass
 
-        # Run agent with timeout protection for Vercel serverless
-        settings = get_settings()
+        # Run agent
         try:
             # Build messages list
             messages = []
@@ -145,12 +143,12 @@ class NBSAdvisorAgent:
                 messages.append((msg["role"], msg["content"]))
             messages.append(("user", message))
 
-            # Invoke agent with timeout and recursion limit
-            async with asyncio.timeout(settings.agent_timeout):
-                result = await self.agent.ainvoke(
-                    {"messages": messages},
-                    config={"recursion_limit": settings.agent_max_steps}
-                )
+            # Invoke agent with recursion limit to cap tool-call loops
+            settings = get_settings()
+            result = await self.agent.ainvoke(
+                {"messages": messages},
+                config={"recursion_limit": settings.agent_max_steps}
+            )
 
             # Extract response from result
             response = ""
@@ -176,12 +174,6 @@ class NBSAdvisorAgent:
                 "sources": []
             }
 
-        except TimeoutError:
-            return {
-                "response": "Sorry, that took a bit too long! Could you try a simpler question? I'll do my best to answer quickly.",
-                "conversation_id": conversation_id,
-                "sources": []
-            }
         except Exception as e:
             error_msg = f"I encountered an error while processing your request: {str(e)}. Please try again or rephrase your question."
             return {
