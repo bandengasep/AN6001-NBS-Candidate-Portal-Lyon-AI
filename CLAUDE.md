@@ -249,10 +249,17 @@ When implementing features, research:
 
 ## Recent Updates & Improvements
 
+### February 9, 2026 - Agent Recursion Limit Fix
+- **Separated recursion_limit from model call budget**: Previously conflated LangGraph execution steps with LLM call budget
+- **Root cause**: `recursion_limit=6` only allowed 6 graph super-steps (barely 2 tool calls), causing "Recursion limit reached" errors on complex queries
+- **Solution**:
+  - Increased `recursion_limit` to 25 (allows multi-step agentic workflows)
+  - Added `ModelCallLimitMiddleware(run_limit=6)` for proper LLM call budget control
+  - Renamed `agent_max_steps` → `agent_max_model_calls` for clarity
+- Agent can now handle complex queries requiring multiple tool calls (search + compare + FAQ) without hitting limits
+
 ### February 9, 2026 - P0 Health Fixes
 - **Python Version Pinned**: Added `.python-version` with `3.12` to prevent Vercel from upgrading Python unexpectedly
-- **Recursion Limit**: Added `recursion_limit=6` to agent invocation config to cap tool-call loops on complex queries
-- **Configurable Settings**: `agent_max_steps` added to `config.py`, overridable via environment variable
 - **Removed asyncio.timeout**: The 8s timeout was too aggressive and caused all chat responses to fail with "took too long" error. Vercel's own 10s serverless hard kill is sufficient as a safety net
 
 ### February 9, 2026 - Lyon Hardening & Data Enrichment

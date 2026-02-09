@@ -145,7 +145,8 @@ The application runs on:
 - Multi-step reasoning for complex queries
 - Tools: knowledge search, program comparison, FAQ lookup
 - Topic-fenced system prompt with off-topic rejection and prompt injection protection
-- Recursion limits (6 steps) for serverless reliability
+- Cost control via ModelCallLimitMiddleware (6 LLM calls max per query)
+- Recursion limit of 25 steps for multi-tool workflows while preventing infinite loops
 
 ### API Design
 The REST API provides endpoints for chat interaction, conversation history, and program data retrieval. Full API documentation is available via FastAPI's automatic OpenAPI interface.
