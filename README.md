@@ -32,76 +32,39 @@ The NBS Candidate Portal is a multi-page web application that helps prospective 
 ## Architecture
 
 ```
-┌─────────────────────────────────────┐
-│   Frontend (React + Vite + Tailwind)│
-│   • Splash Page & Programme Grid    │
-│   • Recommendation Wizard           │
-│   • Lyon Chatbot (file upload)      │
-│   • Programme Browser               │
-└────────────┬────────────────────────┘
-             │ REST API
-             ▼
-┌─────────────────────────────────────┐
-│   Backend (FastAPI)                 │
-│   ┌───────────────────────┐        │
-│   │  LangChain Agent      │        │
-│   │  • RAG Search Tool    │        │
-│   │  • Compare Tool       │        │
-│   │  • FAQ Tool           │        │
-│   └───────────────────────┘        │
-│   ┌───────────────────────┐        │
-│   │  Recommendation Engine│        │
-│   │  • CV Parser (GPT)    │        │
-│   │  • Embedding Matching │        │
-│   │  • Spider Chart Scores│        │
-│   └───────────────────────┘        │
-│             │                      │
-│   ┌─────────┴─────────┐           │
-│   │  Data Layer       │            │
-│   │  • Supabase       │            │
-│   │  • OpenAI API     │            │
-│   └───────────────────┘            │
-└─────────────────────────────────────┘
+Frontend (React + Vite)
+  ├─ Splash Page & Programme Grid
+  ├─ Recommendation Wizard (CV + quiz + spider chart)
+  ├─ Lyon Chatbot (file upload support)
+  └─ Programme Browser
+       │ REST API
+       ▼
+Backend (FastAPI)
+  ├─ LangChain Agent (RAG search, compare, FAQ tools)
+  ├─ Recommendation Engine (CV parser, embedding matching)
+  └─ Data Layer (Supabase + pgvector, OpenAI API)
 ```
 
 ## Technology Stack
 
-**Backend**
-- FastAPI for high-performance async API
-- LangChain for agentic workflow orchestration
-- OpenAI GPT-5.2 for language generation and CV parsing
-- text-embedding-3-small for semantic search (1536 dimensions)
+**Backend**: FastAPI • LangChain • OpenAI GPT-5.2 • text-embedding-3-small (1536d)
 
-**Frontend**
-- React 18 with react-router-dom
-- Vite for fast development and optimized builds
-- Tailwind CSS for responsive UI
-- chart.js for spider chart visualisation
+**Frontend**: React 18 • Vite • Tailwind CSS • chart.js • react-router-dom
 
-**Data Layer**
-- Supabase (PostgreSQL + pgvector extension)
-- Vector similarity search for RAG retrieval
-- Structured programme data with profile scores
+**Data**: Supabase (PostgreSQL + pgvector) • Vector similarity search
 
-**Deployment**
-- Vercel (static frontend + serverless Python backend)
-- Frontend served from FastAPI via StaticFiles mount
-- Python 3.12 pinned via `.python-version`
+**Deployment**: Vercel (FastAPI serves frontend via StaticFiles) • Python 3.12
 
 ## Getting Started
 
-Detailed setup instructions are available in `CLAUDE.md` for development purposes. At a high level:
+**Prerequisites**: Python 3.11+, Node.js 18+, Supabase account, OpenAI API key
 
-1. **Prerequisites**: Python 3.11+, Node.js 18+, Supabase account, OpenAI API key
-2. **Environment Setup**: Configure credentials in `backend/.env`
-3. **Database Initialization**: Run SQL setup script and ingest program data
-4. **Launch Services**: Start FastAPI backend and React frontend
+See `CLAUDE.md` for detailed setup instructions, environment configuration, and development commands.
 
-The application runs on:
+**URLs**:
 - **Production**: https://nbs-candidate-portal.vercel.app
 - **Local Frontend**: `http://localhost:5173`
-- **Local Backend API**: `http://localhost:8000`
-- **API Documentation**: `http://localhost:8000/docs`
+- **Local Backend**: `http://localhost:8000` (API docs at `/docs`)
 
 ## Project Structure
 
@@ -135,33 +98,27 @@ The application runs on:
 
 ## Core Capabilities
 
-### RAG (Retrieval-Augmented Generation)
-- Deep-scraped data from all 22 NBS programme pages (landing pages, sub-pages, PDFs)
-- 1,400+ vector-embedded document chunks covering tuition fees, admissions, curriculum, career outcomes
-- Semantic search using Supabase pgvector with tuned IVFFlat index (`probes=10`) for high recall
+**RAG Pipeline**
+- 1,400+ vector-embedded chunks from 22 NBS programmes (landing pages, sub-pages, PDFs)
+- Semantic search via Supabase pgvector with tuned IVFFlat index for high recall
+- Covers tuition fees, admissions, curriculum, career outcomes, scholarships
 
-### Agentic AI
-- LangChain-based agent with autonomous tool selection
-- Multi-step reasoning for complex queries
-- Tools: knowledge search, program comparison, FAQ lookup
-- Topic-fenced system prompt with off-topic rejection and prompt injection protection
-- Cost control via ModelCallLimitMiddleware (6 LLM calls max per query)
-- Recursion limit of 25 steps for multi-tool workflows while preventing infinite loops
+**Agentic AI**
+- LangChain agent with autonomous tool selection and multi-step reasoning
+- Tools: knowledge search, programme comparison, FAQ lookup
+- Topic-fenced system prompt with prompt injection protection
+- Cost control (6 LLM calls max) + recursion limit (25 steps) for multi-tool workflows
 
-### API Design
-The REST API provides endpoints for chat interaction, conversation history, and program data retrieval. Full API documentation is available via FastAPI's automatic OpenAPI interface.
+**API Design**
+- RESTful endpoints for chat, conversation history, programme data retrieval
+- Full OpenAPI documentation at `/docs`
 
 ## Use Cases
 
-- **Prospective Students**: Explore NBS programmes through the recommendation wizard or natural conversation with Lyon
-- **Programme Comparison**: Side-by-side analysis of degree options via the chatbot
-- **CV-Based Matching**: Upload a CV to get personalised programme recommendations
-- **FAQ Automation**: Instant answers to common admissions questions
-- **Educational Demo**: Showcase practical applications of RAG, agentic AI, and embedding-based matching
-
-## Development
-
-The project follows a modular architecture with clear separation between frontend, backend, and data layers. See `CLAUDE.md` for detailed development guidelines and setup instructions.
+- **Prospective Students**: Explore programmes via recommendation wizard or chat with Lyon
+- **Programme Comparison**: Side-by-side degree analysis
+- **CV-Based Matching**: Upload CV for personalised recommendations
+- **Educational Demo**: RAG, agentic AI, and embedding-based matching showcase
 
 ## Academic Context
 
