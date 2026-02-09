@@ -30,7 +30,8 @@ class Settings(BaseSettings):
     retrieval_k: int = 4
 
     # Agent settings
-    agent_max_steps: int = 6
+    agent_max_model_calls: int = 6  # Max LLM calls per invocation (cost control)
+    agent_recursion_limit: int = 25  # Max graph execution steps (prevent infinite loops)
 
     class Config:
         env_file = ".env"

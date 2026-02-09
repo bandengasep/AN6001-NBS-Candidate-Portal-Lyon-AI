@@ -4,6 +4,7 @@ import uuid
 from typing import Any
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
+from langchain.agents.middleware import ModelCallLimitMiddleware
 
 from app.config import get_settings
 from app.agents.tools import create_rag_tool, create_compare_tool, create_faq_tool
@@ -91,11 +92,17 @@ class NBSAdvisorAgent:
             create_faq_tool()
         ]
 
-        # Create agent using LangChain v1 API
+        # Create agent using LangChain v1 API with middleware for cost control
         self.agent = create_agent(
             model=self.llm,
             tools=self.tools,
-            system_prompt=NBS_ADVISOR_SYSTEM_PROMPT
+            system_prompt=NBS_ADVISOR_SYSTEM_PROMPT,
+            middleware=[
+                ModelCallLimitMiddleware(
+                    run_limit=settings.agent_max_model_calls,
+                    exit_behavior="end"
+                )
+            ]
         )
 
     async def chat(
@@ -143,11 +150,11 @@ class NBSAdvisorAgent:
                 messages.append((msg["role"], msg["content"]))
             messages.append(("user", message))
 
-            # Invoke agent with recursion limit to cap tool-call loops
+            # Invoke agent with proper recursion limit for graph execution
             settings = get_settings()
             result = await self.agent.ainvoke(
                 {"messages": messages},
-                config={"recursion_limit": settings.agent_max_steps}
+                config={"recursion_limit": settings.agent_recursion_limit}
             )
 
             # Extract response from result
