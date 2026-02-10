@@ -31,29 +31,31 @@ The NBS Candidate Portal is a multi-page web application that helps prospective 
 
 ## Architecture
 
+> Full diagram: [`docs/architecture.excalidraw`](docs/architecture.excalidraw) (open with [excalidraw.com](https://excalidraw.com) or VS Code Excalidraw extension)
+
 ```
-Frontend (React + Vite)
-  ├─ Splash Page & Programme Grid
-  ├─ Recommendation Wizard (CV + quiz + spider chart)
-  ├─ Lyon Chatbot (file upload support)
-  └─ Programme Browser
-       │ REST API
-       ▼
-Backend (FastAPI)
-  ├─ LangChain Agent (RAG search, compare, FAQ tools)
-  ├─ Recommendation Engine (CV parser, hybrid profile + semantic matching)
-  └─ Data Layer (Supabase + pgvector, OpenAI API)
+Candidates → Frontend (React + Vite) → Backend (FastAPI) → LangChain Agent
+                                                               ├─ RAG Search
+                                                               ├─ Compare
+                                                               ├─ FAQ Lookup
+                                                               └─ Advisor Hand-off
+                                                                    │
+                                                          ┌────────┴────────┐
+                                                          ▼                 ▼
+                                                     OpenAI GPT-5.2   Supabase pgvector
 ```
 
 ## Technology Stack
 
-**Backend**: FastAPI • LangChain • OpenAI GPT-5.2 • text-embedding-3-small (1536d)
+> Full diagram: [`docs/tech-stack.excalidraw`](docs/tech-stack.excalidraw) (open with [excalidraw.com](https://excalidraw.com) or VS Code Excalidraw extension)
 
-**Frontend**: React 18 • Vite • Tailwind CSS • chart.js • react-router-dom
-
-**Data**: Supabase (PostgreSQL + pgvector) • Vector similarity search
-
-**Deployment**: Vercel (FastAPI serves frontend via StaticFiles) • Python 3.12
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 18 • Vite • Tailwind CSS • React Router • Chart.js |
+| **Backend / API** | FastAPI • Python 3.12 • Pydantic |
+| **AI & Agents** | LangChain • LangGraph • GPT-5.2 • text-embedding-3-small (1536d) |
+| **Database** | Supabase • PostgreSQL • pgvector |
+| **Deployment** | Vercel (Serverless Functions) • GitHub |
 
 ## Getting Started
 
