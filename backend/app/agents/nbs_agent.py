@@ -7,7 +7,7 @@ from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware
 
 from app.config import get_settings
-from app.agents.tools import create_rag_tool, create_compare_tool, create_faq_tool
+from app.agents.tools import create_rag_tool, create_compare_tool, create_faq_tool, create_handoff_tool
 from app.db.supabase import get_chat_history, store_chat_message
 
 
@@ -23,15 +23,27 @@ IDENTITY:
 
 VOICE RULES:
 - Use Singlish for greetings, transitions, and encouragement -- not for factual content
-- When delivering programme details (fees, deadlines, requirements, curriculum), be precise and clear in standard English
-- Keep responses concise. Give the key info first, then offer to elaborate
+- When delivering programme details, be precise and clear in standard English
 - If the user writes casually, match their energy. If they write formally, dial back the Singlish slightly
+
+RESPONSE FORMAT:
+- For initial answers: keep it to 2-4 sentences. Give the most relevant fact, then offer to go deeper
+- When the user asks you to elaborate or says "tell me more": you can give a fuller response (up to a short paragraph), but still write in flowing sentences -- no bullet lists
+- NEVER use bullet points, numbered lists, markdown headers, or code blocks
+- NEVER dump all available information at once, even if your tools return a lot of data. Curate and summarize
+- Write in natural flowing sentences like you're texting a friend, not writing a report
+- Use paragraph breaks (blank lines) to separate distinct thoughts -- don't cram everything into one block of text
+- Bold text for emphasis is fine. Links are fine. Everything else is not
+- If you need to mention multiple items, weave them into a sentence naturally instead of listing them
+- When a question is broad ("Tell me about the MBA"), ask what aspect matters most instead of covering everything
 
 EXAMPLE PHRASES (for tone calibration only -- vary your language naturally):
 - Greeting: "Hey! Welcome to NBS. I'm Lyon, NTU's resident lion. What programme are you eyeing?"
 - Encouragement: "Wah, good choice! That programme is really popular."
 - Transition: "Okay let me check that for you ah..."
-- Factual: "The Nanyang MBA is a 12-month full-time programme. You'll need a bachelor's degree, minimum 2 years work experience, and a competitive GMAT score."
+- Factual (drip-feed): "For the Nanyang MBA, the big three are a bachelor's degree, at least 2 years of work experience, and a competitive GMAT score. Want me to go deeper into any of these?"
+- Comparison (drip-feed): "The main difference between MSc Financial Engineering and MSc Accountancy is the career track -- one targets quant roles, the other audit and advisory. Want me to break down the specifics?"
+- Broad question: "There's quite a bit to cover on that one! What's most important to you -- the fees, the curriculum, or the admissions requirements?"
 - Uncertainty: "Hmm, I'm not 100% sure on that one. Better check the NBS website or drop them an email lah."
 - Sign-off: "Anything else you want to know? I'm here lah."
 
@@ -40,6 +52,14 @@ TOOL USAGE:
 2. Use compare_programs when users want to compare different programmes
 3. Use lookup_faq for common general questions (rankings, location, contact info, GMAT requirements)
 4. Always search before answering programme-specific questions -- do not make up information
+
+HAND-OFF:
+- If you searched the knowledge base and genuinely cannot find the answer, offer to connect the user with an NBS advisor. Say something like: "I don't have that info on hand, but I can connect you with an NBS advisor who can help. Want me to set that up?"
+- If the user explicitly asks to speak with someone, talk to an advisor, schedule a session, or says anything like "can I talk to a real person", call the schedule_advisor_session tool immediately
+- When handing off, call the schedule_advisor_session tool -- this will show the user a form to fill in their details
+- Do NOT try to collect the user's name, email, or details yourself -- the form handles that
+- After calling the tool, let the user know an advisor form will appear and they can fill it in
+- Only offer hand-off for genuine knowledge gaps -- do NOT offer it for off-topic questions (those get the standard redirect)
 
 ALLOWED TOPICS -- You may ONLY discuss:
 - NBS programmes: curriculum, fees, admissions, deadlines, requirements, career outcomes, rankings, faculty
@@ -82,14 +102,16 @@ class NBSAdvisorAgent:
         self.llm = ChatOpenAI(
             model=settings.chat_model,
             temperature=0.7,
-            api_key=settings.openai_api_key
+            api_key=settings.openai_api_key,
+            model_kwargs={"text": {"verbosity": "low"}}
         )
 
         # Create tools
         self.tools = [
             create_rag_tool(),
             create_compare_tool(),
-            create_faq_tool()
+            create_faq_tool(),
+            create_handoff_tool()
         ]
 
         # Create agent using LangChain v1 API with middleware for cost control
@@ -163,11 +185,29 @@ class NBSAdvisorAgent:
                 # Get the last AI message
                 for msg in reversed(result["messages"]):
                     if hasattr(msg, "content") and msg.type == "ai":
-                        response = msg.content
+                        content = msg.content
+                        # Handle Responses API format: list of content blocks
+                        if isinstance(content, list):
+                            response = "\n\n".join(
+                                block.get("text", "") for block in content
+                                if isinstance(block, dict) and block.get("type") == "text"
+                            )
+                        else:
+                            response = content
                         break
 
             if not response:
                 response = "I apologize, but I couldn't generate a response. Please try again."
+
+            # Detect if hand-off tool was called
+            handoff_triggered = False
+            if "messages" in result:
+                for msg in result["messages"]:
+                    if hasattr(msg, "tool_calls") and msg.tool_calls:
+                        for tc in msg.tool_calls:
+                            if tc.get("name") == "schedule_advisor_session":
+                                handoff_triggered = True
+                                break
 
             # Store assistant response
             try:
@@ -178,7 +218,8 @@ class NBSAdvisorAgent:
             return {
                 "response": response,
                 "conversation_id": conversation_id,
-                "sources": []
+                "sources": [],
+                "show_handoff_form": handoff_triggered
             }
 
         except Exception as e:

@@ -47,7 +47,7 @@ export default function ChatPage() {
   const programme = searchParams.get('programme');
   const hasSentInitial = useRef(false);
   const {
-    messages, isLoading, error, messagesEndRef, sendMessage, clearChat,
+    messages, isLoading, error, conversationId, messagesEndRef, sendMessage, clearChat,
   } = useChat();
 
   // If navigated from recommendation with a programme, auto-send a context-rich message
@@ -85,6 +85,7 @@ export default function ChatPage() {
             messagesEndRef={messagesEndRef}
             onSendMessage={sendMessage}
             onClearChat={clearChat}
+            conversationId={conversationId}
           />
         </main>
       </div>

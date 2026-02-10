@@ -123,4 +123,22 @@ export async function uploadChatFile(file) {
   return response.data;
 }
 
+/**
+ * Submit a hand-off request to speak with an NBS advisor
+ * @param {string} name - User's name
+ * @param {string} email - User's email
+ * @param {string} topic - Topic to discuss
+ * @param {string} conversationId - Current conversation ID
+ * @returns {Promise<{status: string, message: string}>}
+ */
+export async function submitHandoff(name, email, topic = '', conversationId = '') {
+  const response = await api.post('/chat/handoff', {
+    name,
+    email,
+    topic,
+    conversation_id: conversationId,
+  });
+  return response.data;
+}
+
 export default api;

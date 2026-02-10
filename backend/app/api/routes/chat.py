@@ -37,7 +37,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
         return ChatResponse(
             response=result["response"],
             conversation_id=result["conversation_id"],
-            sources=result.get("sources", [])
+            sources=result.get("sources", []),
+            show_handoff_form=result.get("show_handoff_form", False)
         )
 
     except Exception as e:
@@ -45,6 +46,32 @@ async def chat(request: ChatRequest) -> ChatResponse:
             status_code=500,
             detail=f"Error processing chat request: {str(e)}"
         )
+
+
+class HandoffRequest(BaseModel):
+    """Request body for advisor hand-off."""
+    name: str
+    email: str
+    topic: str = ""
+    conversation_id: str = ""
+
+
+class HandoffResponse(BaseModel):
+    """Response from advisor hand-off."""
+    status: str
+    message: str
+
+
+@router.post("/handoff", response_model=HandoffResponse)
+async def submit_handoff(request: HandoffRequest) -> HandoffResponse:
+    """Submit a request to speak with an NBS advisor.
+
+    For demo purposes, this simply returns a success confirmation.
+    """
+    return HandoffResponse(
+        status="success",
+        message=f"Your session has been scheduled. An NBS advisor will reach out to you at {request.email} shortly."
+    )
 
 
 class FileExtractResponse(BaseModel):

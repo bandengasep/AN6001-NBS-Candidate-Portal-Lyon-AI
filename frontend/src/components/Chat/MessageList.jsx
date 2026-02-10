@@ -1,13 +1,23 @@
 import { MessageBubble } from './MessageBubble';
+import { HandoffCard } from './HandoffCard';
 import { LoadingDots } from './LoadingDots';
 
-export function MessageList({ messages, isLoading, messagesEndRef }) {
+export function MessageList({ messages, isLoading, messagesEndRef, conversationId }) {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-1">
       {messages.map((message, index) => {
         // Check if this is a consecutive message from the same role
         const prevMessage = messages[index - 1];
         const isConsecutive = prevMessage && prevMessage.role === message.role;
+
+        // Render hand-off card for handoff messages
+        if (message.role === 'handoff') {
+          return (
+            <div key={message.id} className="mt-3">
+              <HandoffCard conversationId={conversationId} />
+            </div>
+          );
+        }
 
         return (
           <div key={message.id} className={isConsecutive ? 'mt-0.5' : 'mt-3'}>

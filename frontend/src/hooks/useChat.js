@@ -73,6 +73,16 @@ export function useChat() {
         timestamp: new Date().toISOString(),
       }));
 
+      // Add hand-off card if the agent triggered a hand-off
+      if (response.show_handoff_form) {
+        assistantMessages.push({
+          id: now + bubbles.length + 1,
+          role: 'handoff',
+          content: '',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       setMessages((prev) => [...prev, ...assistantMessages]);
     } catch (err) {
       console.error('Chat error:', err);
@@ -109,7 +119,7 @@ export function useChat() {
         {
           id: 1,
           role: 'assistant',
-          content: "I can help you with:\n- **Programme Info**: MBA, MSc, PhD, Executive programmes\n- **Admissions**: Requirements, deadlines, how to apply\n- **Comparisons**: Compare programmes side by side\n- **General Questions**: Rankings, scholarships, campus life",
+          content: "I can help you with **programme info** like MBA, MSc, PhD and Executive programmes, **admissions** details like requirements and deadlines, **side-by-side comparisons**, and **general questions** on rankings, scholarships, or campus life.",
           timestamp: new Date().toISOString(),
         },
         {

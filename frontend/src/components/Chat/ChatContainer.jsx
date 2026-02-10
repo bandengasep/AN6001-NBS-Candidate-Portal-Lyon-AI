@@ -8,6 +8,7 @@ export function ChatContainer({
   messagesEndRef,
   onSendMessage,
   onClearChat,
+  conversationId,
 }) {
   return (
     <div className="flex flex-col h-full bg-white">
@@ -23,6 +24,7 @@ export function ChatContainer({
         messages={messages}
         isLoading={isLoading}
         messagesEndRef={messagesEndRef}
+        conversationId={conversationId}
       />
 
       {/* Input area */}

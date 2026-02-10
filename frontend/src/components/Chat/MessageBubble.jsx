@@ -81,7 +81,12 @@ export function MessageBubble({ message, hideAvatar = false }) {
               <p className="text-sm whitespace-pre-wrap">{content}</p>
             ) : (
               <div className="text-sm markdown-content">
-                <ReactMarkdown>{content}</ReactMarkdown>
+                <ReactMarkdown
+                  allowedElements={['p', 'strong', 'em', 'a', 'br']}
+                  unwrapDisallowed={true}
+                >
+                  {content}
+                </ReactMarkdown>
               </div>
             )}
           </div>

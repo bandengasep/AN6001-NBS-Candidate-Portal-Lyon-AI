@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
     # Serve frontend static files (Vercel deployment)
     # The build copies frontend/dist/* to static/ at the project root
     static_dir = Path(__file__).resolve().parent.parent.parent / "static"
-    if static_dir.is_dir():
+    if static_dir.is_dir() and (static_dir / "assets").is_dir():
         # Serve static assets (JS, CSS, images)
         app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="static-assets")
 

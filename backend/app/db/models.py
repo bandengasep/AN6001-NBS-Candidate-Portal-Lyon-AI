@@ -26,6 +26,7 @@ class ChatResponse(BaseModel):
     response: str = Field(..., description="Assistant response")
     conversation_id: str = Field(..., description="Conversation ID for follow-up")
     sources: list[dict[str, Any]] = Field(default_factory=list, description="Retrieved sources")
+    show_handoff_form: bool = Field(default=False, description="Whether to show advisor hand-off form")
 
 
 class Document(BaseModel):
