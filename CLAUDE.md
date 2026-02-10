@@ -79,6 +79,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 | GET | `/api/programs/{id}/profile` | Get spider chart profile scores |
 | GET | `/api/programs/type/{type}` | Filter programmes by degree type |
 | POST | `/api/chat/` | Send chat message to Lyon |
+| POST | `/api/chat/handoff` | Submit advisor hand-off request (demo) |
 | GET | `/api/chat/history/{id}` | Get conversation history |
 | POST | `/api/recommend/parse-cv` | Upload + parse PDF CV |
 | POST | `/api/recommend/match` | Match quiz answers to programmes |
@@ -130,6 +131,7 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 1. **search_nbs_knowledge** (`backend/app/agents/tools/rag_tool.py`): RAG retrieval from vector store
 2. **compare_programs** (`backend/app/agents/tools/compare.py`): Multi-program comparison
 3. **lookup_faq** (`backend/app/agents/tools/faq.py`): Common questions lookup
+4. **schedule_advisor_session** (`backend/app/agents/tools/handoff.py`): Hand-off to human advisor (demo)
 
 **Agent Architecture**:
 - LangChain agent (`backend/app/agents/nbs_agent.py`) with tool selection
@@ -143,6 +145,14 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 - See `backend/app/config.py` for settings
 
 ## Recent Updates & Improvements
+
+### February 10, 2026 - Lyon Humanization & Advisor Hand-off
+- **Conversational responses**: System prompt rewritten with drip-feed pattern (2-4 sentences, offer to elaborate) -- no more information dumps
+- **GPT-5.2 verbosity**: `text.verbosity: "low"` parameter constrains token budget at API level for concise responses
+- **Minimal formatting**: ReactMarkdown restricted to bold/links only; bullet points, headers, and code blocks stripped
+- **Paragraph breaks**: Explicit prompt instruction + Responses API content block handling ensures readable line breaks
+- **Advisor hand-off (demo)**: `schedule_advisor_session` tool triggers inline HandoffCard form in chat (name, email, topic)
+- **Hand-off triggers**: Lyon proactively offers hand-off for knowledge gaps; users can request directly ("talk to a real advisor")
 
 ### February 9, 2026 - Reliability Fixes
 - **Agent recursion limit fix**: Separated LangGraph execution steps (recursion_limit=25) from LLM call budget (ModelCallLimitMiddleware, run_limit=6). Enables multi-tool workflows without hitting limits
