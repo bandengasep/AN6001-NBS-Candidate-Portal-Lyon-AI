@@ -1,6 +1,7 @@
 """Recommendation API routes."""
 
 import json
+import math
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
 import pdfplumber
@@ -101,13 +102,24 @@ class MatchResponse(BaseModel):
 
 @router.post("/match", response_model=MatchResponse)
 async def match_programmes(answers: QuizAnswers, supabase: SupabaseDep) -> MatchResponse:
-    """Match user profile to programmes via embedding similarity.
+    """Match user profile to programmes using hybrid scoring.
 
-    Composes quiz answers (+ optional CV text) into a text paragraph,
-    embeds it, and compares against programme embeddings in Supabase.
-    Returns top 3 matches with spider chart profile scores.
+    Combines direct spider-chart profile similarity (normalized Euclidean
+    distance on 7 axes) with semantic embedding similarity against programme
+    documents. Uses adaptive weights based on whether CV text is present.
     """
-    # Compose user profile as natural language for embedding
+    user_scores = {
+        "quantitative": answers.quantitative,
+        "experience": answers.experience,
+        "leadership": answers.leadership,
+        "tech_analytics": answers.tech_analytics,
+        "business_domain": answers.business_domain,
+        "career_ambition": answers.career_ambition,
+        "study_flexibility": answers.study_flexibility,
+    }
+    axes = list(user_scores.keys())
+
+    # --- Semantic similarity via vector search ---
     profile_parts = [
         f"I have {_experience_label(answers.experience)} of work experience.",
         f"My quantitative skills are {_level_label(answers.quantitative)}.",
@@ -119,56 +131,58 @@ async def match_programmes(answers: QuizAnswers, supabase: SupabaseDep) -> Match
     ]
     if answers.cv_text:
         profile_parts.append(f"Background from CV: {answers.cv_text[:1000]}")
-
     profile_text = " ".join(profile_parts)
 
-    # Embed user profile
     user_embedding = get_embedding(profile_text)
-
-    # Search against programme document embeddings
     result = supabase.rpc(
         "match_documents",
         {
             "query_embedding": user_embedding,
-            "match_count": 10,
-            "match_threshold": 0.3
+            "match_count": 20,
+            "match_threshold": 0.25
         }
     ).execute()
 
-    # Group by programme, take best similarity per programme
-    programme_scores = {}
+    # Best semantic similarity per programme
+    semantic_scores: dict[str, float] = {}
     for doc in (result.data or []):
         prog_name = doc.get("metadata", {}).get("program", "")
         sim = doc.get("similarity", 0)
-        if prog_name and (prog_name not in programme_scores or sim > programme_scores[prog_name]):
-            programme_scores[prog_name] = sim
+        if prog_name and (prog_name not in semantic_scores or sim > semantic_scores[prog_name]):
+            semantic_scores[prog_name] = sim
 
-    # Get programme details for top matches
+    # --- Profile similarity + hybrid scoring for ALL programmes ---
     all_programs = supabase.table("programs").select("*").execute()
-    program_map = {p["name"]: p for p in (all_programs.data or [])}
+
+    has_cv = bool(answers.cv_text)
+    w_profile = 0.4 if has_cv else 0.8
+    w_semantic = 0.6 if has_cv else 0.2
+
+    scored: list[tuple[dict, float]] = []
+    for prog in (all_programs.data or []):
+        prog_scores = prog.get("profile_scores") or {}
+        if not prog_scores:
+            continue
+
+        profile_sim = _profile_similarity(user_scores, prog_scores, axes)
+        raw_semantic = semantic_scores.get(prog["name"], 0.0)
+        semantic_sim = _rescale_semantic(raw_semantic)
+
+        final = w_profile * profile_sim + w_semantic * semantic_sim
+        scored.append((prog, round(final, 3)))
+
+    scored.sort(key=lambda x: -x[1])
 
     matches = []
-    for name, sim in sorted(programme_scores.items(), key=lambda x: -x[1])[:3]:
-        prog = program_map.get(name)
-        if prog:
-            matches.append(ProgramMatch(
-                program_id=prog["id"],
-                name=prog["name"],
-                degree_type=prog["degree_type"],
-                url=prog.get("url"),
-                similarity=round(sim, 3),
-                profile_scores=prog.get("profile_scores") or {}
-            ))
-
-    user_scores = {
-        "quantitative": answers.quantitative,
-        "experience": answers.experience,
-        "leadership": answers.leadership,
-        "tech_analytics": answers.tech_analytics,
-        "business_domain": answers.business_domain,
-        "career_ambition": answers.career_ambition,
-        "study_flexibility": answers.study_flexibility,
-    }
+    for prog, score in scored[:3]:
+        matches.append(ProgramMatch(
+            program_id=prog["id"],
+            name=prog["name"],
+            degree_type=prog["degree_type"],
+            url=prog.get("url"),
+            similarity=score,
+            profile_scores=prog.get("profile_scores") or {}
+        ))
 
     return MatchResponse(user_scores=user_scores, matches=matches)
 
@@ -188,3 +202,21 @@ def _ambition_label(score: int) -> str:
 
 def _flexibility_label(score: int) -> str:
     return {1: "full-time intensive", 2: "full-time standard", 3: "either full or part-time", 4: "part-time preferred", 5: "part-time or online only"}.get(score, "flexible")
+
+
+_MAX_EUCLIDEAN = math.sqrt(7 * (5 - 1) ** 2)  # ~10.583
+
+
+def _profile_similarity(user: dict, programme: dict, axes: list[str]) -> float:
+    """Normalized Euclidean distance between user and programme scores (0-1)."""
+    dist_sq = sum((user.get(a, 3) - programme.get(a, 3)) ** 2 for a in axes)
+    return 1.0 - math.sqrt(dist_sq) / _MAX_EUCLIDEAN
+
+
+def _rescale_semantic(raw: float, lo: float = 0.25, hi: float = 0.60) -> float:
+    """Rescale raw cosine similarity from [lo, hi] to [0, 1]."""
+    if raw <= lo:
+        return 0.0
+    if raw >= hi:
+        return 1.0
+    return (raw - lo) / (hi - lo)

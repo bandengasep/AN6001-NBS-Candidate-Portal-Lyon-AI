@@ -12,7 +12,7 @@ The NBS Candidate Portal is a multi-page web application that helps prospective 
 
 ## Key Features
 
-- **Programme Recommendation Wizard**: Upload your CV + answer a 7-question quiz to get personalised programme matches with a spider chart profile comparison
+- **Programme Recommendation Wizard**: Upload your CV + answer a 7-question quiz to get personalised programme matches with hybrid scoring (profile + semantic similarity) and spider chart comparison
 - **Lyon AI Chatbot**: NTU's lion mascot as your NBS degree advisor, with conversational drip-feed responses, file upload support (PDF/JPG/PNG), and advisor hand-off
 - **Programme Browser**: Browse all 22 NBS programmes with filter tabs and direct links
 - **Agentic AI Architecture**: Autonomous tool selection and multi-step reasoning using LangChain agents
@@ -41,7 +41,7 @@ Frontend (React + Vite)
        ▼
 Backend (FastAPI)
   ├─ LangChain Agent (RAG search, compare, FAQ tools)
-  ├─ Recommendation Engine (CV parser, embedding matching)
+  ├─ Recommendation Engine (CV parser, hybrid profile + semantic matching)
   └─ Data Layer (Supabase + pgvector, OpenAI API)
 ```
 

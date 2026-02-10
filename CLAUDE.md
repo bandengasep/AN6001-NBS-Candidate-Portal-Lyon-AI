@@ -15,7 +15,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 - Programme Recommendation Wizard (CV upload + 7-question quiz + spider chart)
 - RAG-powered chatbot (Lyon) for NBS programme information
 - Agentic AI with tool use (search, compare, FAQ)
-- Spider chart profile matching via embedding similarity
+- Spider chart profile matching via hybrid scoring (profile + semantic similarity)
 - Programme browser with filter tabs
 - Vector similarity search using Supabase pgvector
 - Conversation history and context management
@@ -145,6 +145,12 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 - See `backend/app/config.py` for settings
 
 ## Recent Updates & Improvements
+
+### February 11, 2026 - Hybrid Recommendation Scoring
+- **Hybrid scoring**: Replaced pure embedding similarity with profile similarity (normalized Euclidean distance on 7 spider chart axes) + semantic similarity (rescaled cosine sim), combined with adaptive weights
+- **Adaptive weights**: With CV uploaded: 40% profile / 60% semantic. Without CV: 80% profile / 20% semantic
+- **Score improvement**: Match scores now reach 60-95% for well-matched programmes (was capped at ~50% due to text domain mismatch)
+- **All programmes scored**: Profile similarity computed for all 22 programmes, not just vector search hits
 
 ### February 10, 2026 - Lyon Humanization & Advisor Hand-off
 - **Conversational responses**: System prompt rewritten with drip-feed pattern (2-4 sentences, offer to elaborate) -- no more information dumps
