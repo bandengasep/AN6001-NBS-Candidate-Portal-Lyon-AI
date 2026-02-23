@@ -184,6 +184,10 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 - **Chat Model**: GPT-5.2 (configurable in `backend/app/config.py`)
 
 ## Version Control
+Don't forget to switch to personal account first on github cli!
+```bash
+gh-personal
+```
 
 Use Git for collaborative development:
 - Create feature branches for each major feature
