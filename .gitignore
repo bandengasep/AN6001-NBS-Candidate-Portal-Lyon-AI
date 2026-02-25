@@ -82,6 +82,9 @@ Group Project Guideline.pdf
 # MCP Configuration (personal settings)
 .mcp.json
 
+# feedback meeting
+regine-meeting-LyonAI-feedback.txt
+
 # Git worktrees
 .worktrees/
 .vercel
