@@ -10,7 +10,7 @@ export function PortalHeader() {
           </div>
           <div className="h-7 w-px bg-ntu-border" />
           <div>
-            <div className="text-ntu-dark font-semibold text-[1.05rem] leading-tight">Candidate Portal</div>
+            <div className="text-ntu-dark font-semibold text-[1.05rem] leading-tight">Graduate Candidate Portal</div>
             <div className="text-ntu-muted text-[0.72rem]">Nanyang Business School</div>
           </div>
         </Link>

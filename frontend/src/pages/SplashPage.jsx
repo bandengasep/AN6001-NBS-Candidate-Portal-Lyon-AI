@@ -46,7 +46,7 @@ export default function SplashPage() {
           {/* Left: text */}
           <div>
             <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-5 tracking-tight">
-              Find the Right<br />NBS Degree <span className="text-ntu-gold">for You</span>
+              Find the Right NBS<br />Graduate Degree <span className="text-ntu-gold">for You</span>
             </h1>
             <p className="text-white/65 text-lg leading-relaxed max-w-[480px] mb-8">
               Whether you're exploring options or ready to apply, we'll help you
@@ -111,7 +111,7 @@ export default function SplashPage() {
             { number: '11', label: 'Graduate Programmes' },
             { number: '#1', label: 'MBA in Singapore, #12 Globally (FT)' },
             { number: '100+', label: 'Nationalities Represented' },
-            { number: '2', label: 'AACSB and EQUIS Certified' },
+            { number: 'AACSB & EQUIS', label: 'Internationally Accredited' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-3xl font-bold text-ntu-red leading-none mb-1">{stat.number}</div>
