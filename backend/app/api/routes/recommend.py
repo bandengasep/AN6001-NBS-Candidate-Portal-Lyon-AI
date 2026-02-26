@@ -1,17 +1,32 @@
 """Recommendation API routes."""
 
 import json
-import math
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
 import pdfplumber
 import io
 
 from app.config import get_settings
-from app.rag.embeddings import get_embedding, get_openai_client
+from app.rag.embeddings import get_openai_client
 from app.api.deps import SupabaseDep
 
 router = APIRouter(prefix="/recommend", tags=["recommend"])
+
+
+# The 11 in-scope Graduate Studies programmes
+IN_SCOPE_PROGRAMMES = {
+    "Nanyang MBA",
+    "Nanyang Fellows MBA",
+    "Nanyang Executive MBA",
+    "Nanyang Professional MBA",
+    "MSc Business Analytics",
+    "MSc Finance",
+    "MSc Financial Engineering",
+    "MSc Marketing Science",
+    "MSc Actuarial and Risk Analytics",
+    "MSc Accountancy",
+    "Master in Management",
+}
 
 
 class CVParseResponse(BaseModel):
@@ -72,151 +87,97 @@ Return JSON with these fields:
         raise HTTPException(status_code=500, detail=f"Error parsing CV: {str(e)}")
 
 
-class QuizAnswers(BaseModel):
-    """User's quiz answers as scores per axis."""
-    quantitative: int  # 1-5
-    experience: int
-    leadership: int
-    tech_analytics: int
-    business_domain: int
-    career_ambition: int
-    study_flexibility: int
-    cv_text: str | None = None  # Optional raw CV text
+class BranchAnswers(BaseModel):
+    """User's branching quiz answers."""
+    experience: str  # junior, mid, senior
+    track_choice: str | None = None  # track-mba or track-masters (only for mid-experience)
+    mba_choice: str | None = None  # MBA sub-question answer
+    masters_choice: str | None = None  # Masters sub-question answer
 
 
 class ProgramMatch(BaseModel):
-    """A matched programme with score."""
+    """A matched programme."""
     program_id: str
     name: str
     degree_type: str
     url: str | None
-    similarity: float
-    profile_scores: dict
+    rationale: str
 
 
 class MatchResponse(BaseModel):
     """Recommendation results."""
-    user_scores: dict
     matches: list[ProgramMatch]
 
 
+# Mapping from quiz branch answers to programme names
+MBA_BRANCH_MAP = {
+    "full-time-career-switch": ["Nanyang MBA"],
+    "full-time-elite": ["Nanyang Fellows MBA"],
+    "part-time": ["Nanyang Professional MBA", "Nanyang Executive MBA"],
+    "senior-leadership": ["Nanyang Executive MBA"],
+}
+
+MASTERS_BRANCH_MAP = {
+    "data-analytics": ["MSc Business Analytics", "MSc Financial Engineering"],
+    "finance": ["MSc Finance", "MSc Financial Engineering", "MSc Actuarial and Risk Analytics"],
+    "accounting": ["MSc Accountancy"],
+    "marketing": ["MSc Marketing Science"],
+    "general-management": ["Master in Management", "MSc Marketing Science"],
+}
+
+# Rationales for each programme
+PROGRAMME_RATIONALES = {
+    "Nanyang MBA": "A 12-month full-time programme designed for career switchers with 2+ years of experience. Strong global network and career services.",
+    "Nanyang Fellows MBA": "An elite full-time MBA with a highly selective cohort, strong industry mentoring, and global exchange opportunities.",
+    "Nanyang Executive MBA": "An 18-month part-time programme for senior leaders who want to advance while continuing to work. Requires 8+ years of experience.",
+    "Nanyang Professional MBA": "A part-time MBA for working professionals who want to build leadership skills without leaving their careers.",
+    "MSc Business Analytics": "Focuses on data science, machine learning, and analytics for business decision-making. Ideal for those who want to work at the intersection of tech and business.",
+    "MSc Finance": "Covers investment analysis, portfolio management, and corporate finance. Strong placement into banking and asset management roles.",
+    "MSc Financial Engineering": "A quantitative programme covering derivatives, risk modelling, and algorithmic trading. Available in full-time and part-time tracks.",
+    "MSc Marketing Science": "Blends marketing strategy with data analytics, consumer insights, and branding. Strong industry partnerships.",
+    "MSc Actuarial and Risk Analytics": "Trains actuaries and risk professionals with a mix of statistics, finance, and insurance knowledge.",
+    "MSc Accountancy": "Prepares graduates for careers in audit, tax, and advisory. Recognized by CPA and ACCA professional bodies.",
+    "Master in Management": "A broad-based management degree for early-career professionals or fresh graduates who want a solid business foundation.",
+}
+
+
 @router.post("/match", response_model=MatchResponse)
-async def match_programmes(answers: QuizAnswers, supabase: SupabaseDep) -> MatchResponse:
-    """Match user profile to programmes using hybrid scoring.
+async def match_programmes(answers: BranchAnswers, supabase: SupabaseDep) -> MatchResponse:
+    """Match user to programmes based on branching quiz answers.
 
-    Combines direct spider-chart profile similarity (normalized Euclidean
-    distance on 7 axes) with semantic embedding similarity against programme
-    documents. Uses adaptive weights based on whether CV text is present.
+    Uses direct lookup from branch answers to programme names,
+    then fetches programme details from the database.
     """
-    user_scores = {
-        "quantitative": answers.quantitative,
-        "experience": answers.experience,
-        "leadership": answers.leadership,
-        "tech_analytics": answers.tech_analytics,
-        "business_domain": answers.business_domain,
-        "career_ambition": answers.career_ambition,
-        "study_flexibility": answers.study_flexibility,
-    }
-    axes = list(user_scores.keys())
+    # Determine track from experience
+    track_map = {"junior": "masters", "mid": "both", "senior": "mba"}
+    track = track_map.get(answers.experience, "masters")
 
-    # --- Semantic similarity via vector search ---
-    profile_parts = [
-        f"I have {_experience_label(answers.experience)} of work experience.",
-        f"My quantitative skills are {_level_label(answers.quantitative)}.",
-        f"My leadership experience is {_level_label(answers.leadership)}.",
-        f"My interest in technology and analytics is {_level_label(answers.tech_analytics)}.",
-        f"I am interested in {_domain_label(answers.business_domain)}.",
-        f"My career goal is to {_ambition_label(answers.career_ambition)}.",
-        f"I prefer {_flexibility_label(answers.study_flexibility)} study.",
-    ]
-    if answers.cv_text:
-        profile_parts.append(f"Background from CV: {answers.cv_text[:1000]}")
-    profile_text = " ".join(profile_parts)
+    if track == "both" and answers.track_choice:
+        track = "mba" if answers.track_choice == "track-mba" else "masters"
 
-    user_embedding = get_embedding(profile_text)
-    result = supabase.rpc(
-        "match_documents",
-        {
-            "query_embedding": user_embedding,
-            "match_count": 20,
-            "match_threshold": 0.25
-        }
-    ).execute()
+    # Resolve programme names from branch answer
+    if track == "mba":
+        programme_names = MBA_BRANCH_MAP.get(answers.mba_choice, [])
+    else:
+        programme_names = MASTERS_BRANCH_MAP.get(answers.masters_choice, [])
 
-    # Best semantic similarity per programme
-    semantic_scores: dict[str, float] = {}
-    for doc in (result.data or []):
-        prog_name = doc.get("metadata", {}).get("program", "")
-        sim = doc.get("similarity", 0)
-        if prog_name and (prog_name not in semantic_scores or sim > semantic_scores[prog_name]):
-            semantic_scores[prog_name] = sim
+    if not programme_names:
+        return MatchResponse(matches=[])
 
-    # --- Profile similarity + hybrid scoring for ALL programmes ---
+    # Fetch programme details from database
     all_programs = supabase.table("programs").select("*").execute()
-
-    has_cv = bool(answers.cv_text)
-    w_profile = 0.4 if has_cv else 0.8
-    w_semantic = 0.6 if has_cv else 0.2
-
-    scored: list[tuple[dict, float]] = []
-    for prog in (all_programs.data or []):
-        prog_scores = prog.get("profile_scores") or {}
-        if not prog_scores:
-            continue
-
-        profile_sim = _profile_similarity(user_scores, prog_scores, axes)
-        raw_semantic = semantic_scores.get(prog["name"], 0.0)
-        semantic_sim = _rescale_semantic(raw_semantic)
-
-        final = w_profile * profile_sim + w_semantic * semantic_sim
-        scored.append((prog, round(final, 3)))
-
-    scored.sort(key=lambda x: -x[1])
+    prog_lookup = {p["name"]: p for p in (all_programs.data or []) if p["name"] in IN_SCOPE_PROGRAMMES}
 
     matches = []
-    for prog, score in scored[:3]:
-        matches.append(ProgramMatch(
-            program_id=prog["id"],
-            name=prog["name"],
-            degree_type=prog["degree_type"],
-            url=prog.get("url"),
-            similarity=score,
-            profile_scores=prog.get("profile_scores") or {}
-        ))
+    for name in programme_names:
+        prog = prog_lookup.get(name)
+        if prog:
+            matches.append(ProgramMatch(
+                program_id=prog["id"],
+                name=prog["name"],
+                degree_type=prog["degree_type"],
+                url=prog.get("url"),
+                rationale=PROGRAMME_RATIONALES.get(name, ""),
+            ))
 
-    return MatchResponse(user_scores=user_scores, matches=matches)
-
-
-# Helper functions to convert numeric scores to natural language
-def _level_label(score: int) -> str:
-    return {1: "very limited", 2: "limited", 3: "moderate", 4: "strong", 5: "very strong"}.get(score, "moderate")
-
-def _experience_label(score: int) -> str:
-    return {1: "no", 2: "1-2 years", 3: "3-5 years", 4: "6-10 years", 5: "10+ years"}.get(score, "some")
-
-def _domain_label(score: int) -> str:
-    return {1: "general business", 2: "marketing and strategy", 3: "finance and accounting", 4: "technology and analytics", 5: "quantitative research"}.get(score, "business")
-
-def _ambition_label(score: int) -> str:
-    return {1: "explore options", 2: "advance in current field", 3: "switch careers", 4: "move into leadership", 5: "pursue research or academia"}.get(score, "advance my career")
-
-def _flexibility_label(score: int) -> str:
-    return {1: "full-time intensive", 2: "full-time standard", 3: "either full or part-time", 4: "part-time preferred", 5: "part-time or online only"}.get(score, "flexible")
-
-
-_MAX_EUCLIDEAN = math.sqrt(7 * (5 - 1) ** 2)  # ~10.583
-
-
-def _profile_similarity(user: dict, programme: dict, axes: list[str]) -> float:
-    """Normalized Euclidean distance between user and programme scores (0-1)."""
-    dist_sq = sum((user.get(a, 3) - programme.get(a, 3)) ** 2 for a in axes)
-    return 1.0 - math.sqrt(dist_sq) / _MAX_EUCLIDEAN
-
-
-def _rescale_semantic(raw: float, lo: float = 0.25, hi: float = 0.60) -> float:
-    """Rescale raw cosine similarity from [lo, hi] to [0, 1]."""
-    if raw <= lo:
-        return 0.0
-    if raw >= hi:
-        return 1.0
-    return (raw - lo) / (hi - lo)
+    return MatchResponse(matches=matches)

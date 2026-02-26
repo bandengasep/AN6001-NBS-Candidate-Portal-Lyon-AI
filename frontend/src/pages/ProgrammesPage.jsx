@@ -5,7 +5,7 @@ import { PortalHeader } from '../components/Layout/PortalHeader';
 import { Footer } from '../components/Layout/Footer';
 import { getPrograms } from '../services/api';
 
-const FILTER_TABS = ['All', 'MBA', 'MSc', 'PhD', 'Executive'];
+const FILTER_TABS = ['All', 'MBA', 'MSc', 'Executive'];
 
 function getBannerColor(degreeType) {
   if (!degreeType) return 'bg-ntu-dark';

@@ -1,6 +1,6 @@
-"""Curated registry of all NBS programmes with metadata.
+"""Curated registry of NBS Graduate Studies programmes.
 
-This replaces the hardcoded PROGRAM_URLS dict in the old scraper.
+Scoped to the 11 programmes managed by the NBS Graduate Studies Office.
 Auto-discovery from index pages is unreliable (JS-rendered cards),
 so we curate the list but make it easy to update.
 """
@@ -14,7 +14,7 @@ class ProgrammeEntry:
 
     name: str
     slug: str
-    category: str  # mba, msc, undergraduate, phd, executive_education, china
+    category: str  # mba, msc, executive
     landing_url: str
     is_external: bool = False
     language: str = "en"
@@ -32,13 +32,6 @@ DEFAULT_SUB_PAGES = [
     "contact-us",
 ]
 
-# PhD has its own sub-page pattern
-PHD_SUB_PAGES = [
-    "curriculum",
-    "admission",
-    "contact-us",
-]
-
 # Some newer programmes only have a subset
 MINIMAL_SUB_PAGES = [
     "programme-overview",
@@ -48,19 +41,12 @@ MINIMAL_SUB_PAGES = [
 
 
 NBS_PROGRAMME_REGISTRY: list[ProgrammeEntry] = [
-    # ── MBA Programmes ──────────────────────────────────────────────
+    # ── MBA Track (4 programmes) ─────────────────────────────────────
     ProgrammeEntry(
         name="Nanyang MBA",
         slug="nanyang-mba",
         category="mba",
         landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/nanyang-mba",
-        sub_page_suffixes=DEFAULT_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="Nanyang Professional MBA",
-        slug="nanyang-professional-mba",
-        category="mba",
-        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/nanyang-professional-mba/home",
         sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
     ProgrammeEntry(
@@ -73,45 +59,24 @@ NBS_PROGRAMME_REGISTRY: list[ProgrammeEntry] = [
     ProgrammeEntry(
         name="Nanyang Executive MBA",
         slug="nanyang-executive-mba",
-        category="mba",
+        category="executive",
         landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/nanyang-executive-mba",
         sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
     ProgrammeEntry(
-        name="NTU IMBA (Vietnam)",
-        slug="ntu-imba",
+        name="Nanyang Professional MBA",
+        slug="nanyang-professional-mba",
         category="mba",
-        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/ntu-imba",
-        sub_page_suffixes=MINIMAL_SUB_PAGES,
+        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/nanyang-professional-mba/home",
+        sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
 
-    # ── MSc Programmes ──────────────────────────────────────────────
-    ProgrammeEntry(
-        name="MSc Accountancy",
-        slug="msc-accountancy",
-        category="msc",
-        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-accountancy/home",
-        sub_page_suffixes=DEFAULT_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="MSc Financial Engineering",
-        slug="msc-financial-engineering",
-        category="msc",
-        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-financial-engineering/home",
-        sub_page_suffixes=DEFAULT_SUB_PAGES,
-    ),
+    # ── Specialized Masters Track (7 programmes) ─────────────────────
     ProgrammeEntry(
         name="MSc Business Analytics",
         slug="msc-business-analytics",
         category="msc",
         landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-business-analytics",
-        sub_page_suffixes=DEFAULT_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="MSc Marketing Science",
-        slug="msc-marketing-science",
-        category="msc",
-        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-marketing-science/home",
         sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
     ProgrammeEntry(
@@ -122,10 +87,31 @@ NBS_PROGRAMME_REGISTRY: list[ProgrammeEntry] = [
         sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
     ProgrammeEntry(
+        name="MSc Financial Engineering",
+        slug="msc-financial-engineering",
+        category="msc",
+        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-financial-engineering/home",
+        sub_page_suffixes=DEFAULT_SUB_PAGES,
+    ),
+    ProgrammeEntry(
+        name="MSc Marketing Science",
+        slug="msc-marketing-science",
+        category="msc",
+        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-marketing-science/home",
+        sub_page_suffixes=DEFAULT_SUB_PAGES,
+    ),
+    ProgrammeEntry(
         name="MSc Actuarial and Risk Analytics",
         slug="msc-actuarial-risk-analytics",
         category="msc",
         landing_url="https://ntu.sg/nbs-mara",
+        sub_page_suffixes=DEFAULT_SUB_PAGES,
+    ),
+    ProgrammeEntry(
+        name="MSc Accountancy",
+        slug="msc-accountancy",
+        category="msc",
+        landing_url="https://www.ntu.edu.sg/business/admissions/graduate-studies/msc-accountancy/home",
         sub_page_suffixes=DEFAULT_SUB_PAGES,
     ),
     ProgrammeEntry(
@@ -134,87 +120,6 @@ NBS_PROGRAMME_REGISTRY: list[ProgrammeEntry] = [
         category="msc",
         landing_url="https://ntu.sg/nbs-mim",
         sub_page_suffixes=DEFAULT_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="NTU-PKU Double Masters in Finance",
-        slug="ntu-pku-double-masters",
-        category="msc",
-        landing_url="https://ntu.sg/nbs-MSCF-DM",
-        sub_page_suffixes=MINIMAL_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="MSc Blockchain",
-        slug="msc-blockchain",
-        category="msc",
-        landing_url="https://www.ntu.edu.sg/education/graduate-programme/master-of-science-in-blockchain",
-        sub_page_suffixes=MINIMAL_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="MSc Asset and Wealth Management",
-        slug="msc-asset-wealth-management",
-        category="msc",
-        landing_url="https://wmi.edu.sg/programmes/master-of-science-in-asset-wealth-management/",
-        is_external=True,
-        sub_page_suffixes=[],
-    ),
-
-    # ── PhD ──────────────────────────────────────────────────────────
-    ProgrammeEntry(
-        name="PhD in Business",
-        slug="phd-business",
-        category="phd",
-        landing_url="https://www.ntu.edu.sg/business/admissions/phd-programme",
-        sub_page_suffixes=PHD_SUB_PAGES,
-    ),
-
-    # ── Undergraduate ────────────────────────────────────────────────
-    ProgrammeEntry(
-        name="Bachelor of Business",
-        slug="bachelor-business",
-        category="undergraduate",
-        landing_url="https://www.ntu.edu.sg/business/admissions/ugadmission",
-        sub_page_suffixes=[],
-    ),
-
-    # ── China / ASEAN Programmes ─────────────────────────────────────
-    ProgrammeEntry(
-        name="Nanyang-SJTU Executive MBA (Chinese)",
-        slug="emba-cn",
-        category="china",
-        landing_url="https://www.ntu.edu.sg/business/admissions/china-programmes-cn/emba-cn",
-        language="zh",
-        sub_page_suffixes=[],
-    ),
-    ProgrammeEntry(
-        name="Nanyang Executive MBA Singapore (Chinese)",
-        slug="embac",
-        category="china",
-        landing_url="https://www.ntu.edu.sg/business/admissions/china-programmes-cn/embac",
-        language="zh",
-        sub_page_suffixes=[],
-    ),
-
-    # ── Executive Education ──────────────────────────────────────────
-    ProgrammeEntry(
-        name="Executive Master of Science in Sustainability Management",
-        slug="exec-msc-sustainability",
-        category="executive_education",
-        landing_url="https://www.ntu.edu.sg/business/admissions/NEE/Executive-Master-of-Science-in-Sustainability-Management",
-        sub_page_suffixes=MINIMAL_SUB_PAGES,
-    ),
-    ProgrammeEntry(
-        name="FlexiMasters",
-        slug="fleximasters",
-        category="executive_education",
-        landing_url="https://www.ntu.edu.sg/business/admissions/NEE/FlexiMasters",
-        sub_page_suffixes=[],
-    ),
-    ProgrammeEntry(
-        name="Public Programmes for Professionals",
-        slug="public-programmes",
-        category="executive_education",
-        landing_url="https://www.ntu.edu.sg/business/admissions/NEE/public-programmes-for-professionals",
-        sub_page_suffixes=[],
     ),
 ]
 

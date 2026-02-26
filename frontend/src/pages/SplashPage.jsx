@@ -83,7 +83,7 @@ export default function SplashPage() {
                   <div className="text-white font-semibold text-lg">Upload CV + Take Quiz</div>
                 </div>
               </div>
-              <div className="text-white/50 text-sm leading-relaxed">Get matched to NBS programmes based on your background, skills, and career goals. See your fit on a spider chart.</div>
+              <div className="text-white/50 text-sm leading-relaxed">Get matched to NBS programmes based on your background, skills, and career goals.</div>
             </Link>
 
             <Link to="/chat" className="block relative bg-white/[0.06] backdrop-blur border border-white/10 rounded-lg p-6 hover:bg-white/10 hover:border-white/20 transition-all hover:-translate-y-0.5">
@@ -108,10 +108,10 @@ export default function SplashPage() {
       <div className="bg-[#F5F5F5] border-b border-ntu-border">
         <div className="max-w-[1200px] mx-auto px-8 py-7 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { number: '22', label: 'Graduate Programmes' },
-            { number: '#1', label: 'Business School in Singapore' },
+            { number: '11', label: 'Graduate Programmes' },
+            { number: '#1', label: 'MBA in Singapore, #12 Globally (FT)' },
             { number: '100+', label: 'Nationalities Represented' },
-            { number: 'Triple', label: 'Accredited (AACSB, EQUIS, AMBA)' },
+            { number: '2', label: 'AACSB and EQUIS Certified' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-3xl font-bold text-ntu-red leading-none mb-1">{stat.number}</div>
@@ -187,10 +187,10 @@ export default function SplashPage() {
             </p>
             <ul className="space-y-2 mb-8">
               {[
-                'Search across all 22 NBS graduate programmes',
+                'Search across all 11 NBS graduate programmes',
                 'Compare programmes side by side',
                 'Get answers on admissions, fees, and deadlines',
-                "Friendly Singaporean personality with a lion's heart",
+                "Warm, professional advice from NTU's lion mascot",
               ].map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5 text-sm text-ntu-body">
                   <svg className="w-[18px] h-[18px] text-ntu-red flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
@@ -218,13 +218,13 @@ export default function SplashPage() {
             </div>
             <div className="p-5 flex flex-col gap-3 min-h-[260px]">
               <div className="self-start max-w-[82%] bg-[#F5F5F5] text-ntu-body rounded-md rounded-bl-sm px-4 py-2.5 text-sm leading-relaxed">
-                Hey! Welcome to NBS. I'm Lyon, NTU's resident lion. What programme are you eyeing?
+                Hi there! Welcome to NBS. I'm Lyon, NTU's resident lion. What programme are you interested in?
               </div>
               <div className="self-end max-w-[82%] bg-ntu-red text-white rounded-md rounded-br-sm px-4 py-2.5 text-sm leading-relaxed">
                 What's the difference between MBA and EMBA?
               </div>
               <div className="self-start max-w-[82%] bg-[#F5F5F5] text-ntu-body rounded-md rounded-bl-sm px-4 py-2.5 text-sm leading-relaxed">
-                Good question lah! The Nanyang MBA is 12 months full-time -- perfect for a career switch. The EMBA is 18 months part-time, designed for senior leaders who want to keep working. Want me to compare them side by side?
+                Great question! The Nanyang MBA is a 12-month full-time programme, ideal for a career switch. The Executive MBA is an 18-month part-time programme designed for senior leaders who want to keep working. Want me to compare them side by side?
               </div>
             </div>
             <div className="px-5 py-3 border-t border-ntu-border flex items-center gap-3">

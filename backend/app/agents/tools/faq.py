@@ -10,7 +10,7 @@ NBS_FAQS = {
     },
     "rankings": {
         "question": "How is NBS ranked?",
-        "answer": "Nanyang Business School consistently ranks among the top business schools globally. The MBA programme is ranked in the top 30 globally by Financial Times. NBS is triple-accredited by AACSB, EQUIS, and AMBA, a distinction held by less than 1% of business schools worldwide."
+        "answer": "Nanyang Business School consistently ranks among the top business schools globally. The Nanyang MBA is ranked #1 in Singapore and #12 globally by the Financial Times. NBS is certified by AACSB and EQUIS, placing it among the top business schools worldwide."
     },
     "application_deadline": {
         "question": "What are the application deadlines?",
@@ -22,11 +22,11 @@ NBS_FAQS = {
     },
     "work_experience": {
         "question": "How much work experience is required?",
-        "answer": "Work experience requirements vary: MBA typically requires 3-5 years, EMBA requires 8-10 years of managerial experience, MSc programmes often accept fresh graduates but prefer 1-2 years experience. PhD programmes welcome candidates with strong academic backgrounds."
+        "answer": "Work experience requirements vary: MBA typically requires 3-5 years, EMBA requires 8-10 years of managerial experience, and MSc programmes often accept fresh graduates but prefer 1-2 years experience. Check the specific programme page for exact requirements."
     },
     "scholarships": {
         "question": "Are scholarships available?",
-        "answer": "Yes, NBS offers various scholarships and financial aid options. Merit-based scholarships are available for outstanding candidates. Teaching/Research assistantships are available for PhD students. Check with the admissions office for current scholarship opportunities."
+        "answer": "Yes, NBS offers various scholarships and financial aid options. Merit-based scholarships are available for outstanding candidates across MBA and MSc programmes. Check with the admissions office for current scholarship opportunities."
     },
     "language": {
         "question": "What is the language of instruction?",

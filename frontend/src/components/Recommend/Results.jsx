@@ -1,32 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { SpiderChart } from '../Charts/SpiderChart';
 
 /**
- * Results view showing user profile spider chart and top 3 programme matches.
+ * Results view showing matched programmes with text rationale.
  * @param {Object} props
- * @param {Object} props.userScores - User's quiz answers as scores
- * @param {Array} props.matches - Top 3 matched programmes from API
+ * @param {Array} props.matches - Matched programmes from API
  * @param {Function} props.onRetake - Restart the quiz
  */
-export function Results({ userScores, matches, onRetake, cvData }) {
+export function Results({ matches, onRetake }) {
   const navigate = useNavigate();
 
   function handleAskLyon(match) {
-    // Store recommendation context so Lyon can reference it
-    sessionStorage.setItem('recommendContext', JSON.stringify({
-      programme: match.name,
-      matchScore: Math.round(match.similarity * 100),
-      userScores,
-      programmeScores: match.profile_scores,
-      cvSummary: cvData ? {
-        industry: cvData.industry,
-        yearsExperience: cvData.years_experience,
-        educationLevel: cvData.education_level,
-        skills: cvData.skills,
-        quantitativeBackground: cvData.quantitative_background,
-        leadershipExperience: cvData.leadership_experience,
-      } : null,
-    }));
     navigate(`/chat?programme=${encodeURIComponent(match.name)}`);
   }
 
@@ -34,44 +17,28 @@ export function Results({ userScores, matches, onRetake, cvData }) {
     <div>
       <h2 className="text-xl font-bold text-ntu-dark mb-2">Your Programme Recommendations</h2>
       <p className="text-sm text-ntu-muted mb-8">
-        Based on your profile, here are the NBS programmes that best match your background and goals.
+        Based on your answers, here are the NBS programmes that best fit your profile.
       </p>
-
-      {/* User profile chart */}
-      <div className="bg-white border border-ntu-border rounded-lg p-6 mb-8">
-        <h3 className="text-sm font-semibold text-ntu-dark mb-4">Your Profile</h3>
-        <div className="max-w-[400px] mx-auto">
-          <SpiderChart userScores={userScores} />
-        </div>
-      </div>
 
       {/* Matches */}
       {matches.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {matches.map((match, i) => (
-            <div key={match.program_id} className="bg-white border border-ntu-border rounded-lg overflow-hidden">
+            <div key={match.program_id} className="border border-ntu-border rounded-lg overflow-hidden">
               <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <span className="text-xs font-semibold text-ntu-muted uppercase tracking-wider">
-                      #{i + 1} Match
-                    </span>
-                    <h3 className="text-lg font-bold text-ntu-dark">{match.name}</h3>
-                    <span className="text-xs text-ntu-muted">{match.degree_type}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-ntu-red">{Math.round(match.similarity * 100)}%</div>
-                    <div className="text-xs text-ntu-muted">match</div>
-                  </div>
+                <div className="mb-3">
+                  <span className="text-xs font-semibold text-ntu-red uppercase tracking-wider">
+                    Recommended {matches.length > 1 ? `#${i + 1}` : ''}
+                  </span>
+                  <h3 className="text-lg font-bold text-ntu-dark mt-1">{match.name}</h3>
+                  <span className="text-xs text-ntu-muted">{match.degree_type}</span>
                 </div>
 
-                {/* Overlay chart */}
-                <div className="max-w-[350px] mx-auto mb-4">
-                  <SpiderChart
-                    userScores={userScores}
-                    programmeOverlays={[{ name: match.name, scores: match.profile_scores }]}
-                  />
-                </div>
+                {match.rationale && (
+                  <p className="text-sm text-ntu-body leading-relaxed mb-4">
+                    {match.rationale}
+                  </p>
+                )}
 
                 <div className="flex gap-3 pt-2">
                   {match.url && (

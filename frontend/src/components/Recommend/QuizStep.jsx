@@ -1,135 +1,244 @@
-const QUIZ_STEPS = [
+/**
+ * Branching quiz flow for programme recommendations.
+ *
+ * Step 1: Work experience → determines track
+ * Step 2: Track-specific question → narrows programmes
+ */
+
+const EXPERIENCE_OPTIONS = [
+  { label: '0-2 years (or fresh graduate)', value: 'junior', track: 'masters' },
+  { label: '3-5 years', value: 'mid', track: 'both' },
+  { label: '6+ years', value: 'senior', track: 'mba' },
+];
+
+const MBA_OPTIONS = [
   {
-    axis: 'quantitative',
-    question: 'How would you describe your quantitative and analytical skills?',
-    options: [
-      { label: 'Limited - I prefer qualitative work', value: 1 },
-      { label: 'Moderate - I can work with data when needed', value: 3 },
-      { label: 'Strong - I enjoy statistics, modelling, and data analysis', value: 4 },
-      { label: 'Expert - I have a STEM background or work with data daily', value: 5 },
-    ],
+    label: 'Full-time intensive career switch',
+    value: 'full-time-career-switch',
+    programmes: ['Nanyang MBA'],
   },
   {
-    axis: 'experience',
-    question: 'How many years of professional work experience do you have?',
-    options: [
-      { label: 'Fresh graduate or less than 1 year', value: 1 },
-      { label: '1-3 years', value: 2 },
-      { label: '3-6 years', value: 3 },
-      { label: '6-10 years', value: 4 },
-      { label: 'More than 10 years', value: 5 },
-    ],
+    label: 'Full-time with elite global network',
+    value: 'full-time-elite',
+    programmes: ['Nanyang Fellows MBA'],
   },
   {
-    axis: 'leadership',
-    question: 'What best describes your leadership or management experience?',
-    options: [
-      { label: 'No formal leadership roles yet', value: 1 },
-      { label: 'Team lead or project lead experience', value: 3 },
-      { label: 'Manager overseeing a team or department', value: 4 },
-      { label: 'Senior executive or director level', value: 5 },
-    ],
+    label: 'Part-time while working',
+    value: 'part-time',
+    programmes: ['Nanyang Professional MBA', 'Nanyang Executive MBA'],
   },
   {
-    axis: 'tech_analytics',
-    question: 'How interested are you in technology, data science, or AI?',
-    options: [
-      { label: 'Not really my thing', value: 1 },
-      { label: 'Somewhat interested', value: 2 },
-      { label: 'Very interested - I want to use it in my career', value: 4 },
-      { label: 'It is my career - I work in tech/analytics', value: 5 },
-    ],
+    label: 'Senior leadership, part-time',
+    value: 'senior-leadership',
+    programmes: ['Nanyang Executive MBA'],
+  },
+];
+
+const MASTERS_OPTIONS = [
+  {
+    label: 'Data, analytics, or AI',
+    value: 'data-analytics',
+    programmes: ['MSc Business Analytics', 'MSc Financial Engineering'],
   },
   {
-    axis: 'business_domain',
-    question: 'Which business area interests you most?',
-    options: [
-      { label: 'General management and strategy', value: 1 },
-      { label: 'Marketing, branding, or consumer insights', value: 2 },
-      { label: 'Finance, accounting, or investment', value: 3 },
-      { label: 'Data analytics, technology, or operations', value: 4 },
-      { label: 'Research or academia', value: 5 },
-    ],
+    label: 'Finance or investments',
+    value: 'finance',
+    programmes: ['MSc Finance', 'MSc Financial Engineering', 'MSc Actuarial and Risk Analytics'],
   },
   {
-    axis: 'career_ambition',
-    question: 'What is your primary goal for pursuing a graduate degree?',
-    options: [
-      { label: 'Explore my options and learn new skills', value: 1 },
-      { label: 'Advance in my current field', value: 2 },
-      { label: 'Switch to a new career or industry', value: 3 },
-      { label: 'Move into senior leadership', value: 4 },
-      { label: 'Pursue academic research or a PhD', value: 5 },
-    ],
+    label: 'Accounting or audit',
+    value: 'accounting',
+    programmes: ['MSc Accountancy'],
   },
   {
-    axis: 'study_flexibility',
-    question: 'What is your preferred study mode?',
-    options: [
-      { label: 'Full-time intensive (12 months or less)', value: 1 },
-      { label: 'Full-time standard pace', value: 2 },
-      { label: 'Either full-time or part-time', value: 3 },
-      { label: 'Part-time - I want to keep working', value: 4 },
-    ],
+    label: 'Marketing or branding',
+    value: 'marketing',
+    programmes: ['MSc Marketing Science'],
+  },
+  {
+    label: 'General management or broad business foundation',
+    value: 'general-management',
+    programmes: ['Master in Management', 'MSc Marketing Science'],
   },
 ];
 
 /**
- * Single quiz question with radio options.
- * @param {Object} props
- * @param {number} props.stepIndex - 0-based question index
- * @param {Object} props.answers - Current answers object
- * @param {Function} props.onAnswer - Called with (axis, value)
- * @param {Function} props.onBack - Go to previous step
- * @param {Function} props.onNext - Go to next step
+ * Get the appropriate Step 2 options based on the user's track.
  */
-export function QuizStep({ stepIndex, answers, onAnswer, onBack, onNext }) {
-  const step = QUIZ_STEPS[stepIndex];
-  const selected = answers[step.axis];
-  const totalSteps = QUIZ_STEPS.length;
+function getStep2Options(track) {
+  if (track === 'mba') return { question: 'What type of MBA programme are you looking for?', options: MBA_OPTIONS };
+  if (track === 'masters') return { question: 'Which area interests you most?', options: MASTERS_OPTIONS };
+  // 'both' — show all options
+  return {
+    question: 'Which direction interests you more?',
+    options: [
+      { label: 'MBA — leadership, strategy, career transformation', value: 'track-mba', track: 'mba' },
+      { label: 'Specialized Masters — deep expertise in a specific field', value: 'track-masters', track: 'masters' },
+    ],
+  };
+}
 
+/**
+ * Resolve the final matched programme names from the quiz answers.
+ */
+export function resolveMatches(answers) {
+  const { experience, trackChoice, mbaChoice, mastersChoice } = answers;
+  const exp = EXPERIENCE_OPTIONS.find((o) => o.value === experience);
+  if (!exp) return [];
+
+  let track = exp.track;
+  if (track === 'both' && trackChoice) {
+    const choice = getStep2Options('both').options.find((o) => o.value === trackChoice);
+    track = choice?.track || 'masters';
+  }
+
+  if (track === 'mba') {
+    const choice = MBA_OPTIONS.find((o) => o.value === mbaChoice);
+    return choice?.programmes || [];
+  }
+
+  const choice = MASTERS_OPTIONS.find((o) => o.value === mastersChoice);
+  return choice?.programmes || [];
+}
+
+/**
+ * Branching quiz component.
+ * @param {Object} props
+ * @param {Object} props.answers - Current answers: { experience, trackChoice, mbaChoice, mastersChoice }
+ * @param {Function} props.onAnswer - Called with (key, value)
+ * @param {Function} props.onBack - Go back
+ * @param {Function} props.onNext - Go forward / submit
+ * @param {number} props.step - Current step (1, 2, or 3 for track-both sub-step)
+ */
+export function QuizStep({ answers, onAnswer, onBack, onNext, step }) {
+  // Step 1: Work experience
+  if (step === 1) {
+    return (
+      <QuizQuestion
+        stepLabel="Step 1 of 2"
+        progress={50}
+        question="How many years of work experience do you have?"
+        options={EXPERIENCE_OPTIONS}
+        selectedValue={answers.experience}
+        onSelect={(value) => onAnswer('experience', value)}
+        onBack={onBack}
+        onNext={onNext}
+        canProceed={!!answers.experience}
+        nextLabel="Next"
+      />
+    );
+  }
+
+  // Determine track from experience
+  const exp = EXPERIENCE_OPTIONS.find((o) => o.value === answers.experience);
+  const track = exp?.track || 'masters';
+
+  // Step 2a: If track is 'both', ask which direction first
+  if (step === 2 && track === 'both' && !answers.trackChoice) {
+    const { question, options } = getStep2Options('both');
+    return (
+      <QuizQuestion
+        stepLabel="Step 2a of 2"
+        progress={66}
+        question={question}
+        options={options}
+        selectedValue={answers.trackChoice}
+        onSelect={(value) => onAnswer('trackChoice', value)}
+        onBack={onBack}
+        onNext={onNext}
+        canProceed={!!answers.trackChoice}
+        nextLabel="Next"
+      />
+    );
+  }
+
+  // Resolve effective track
+  let effectiveTrack = track;
+  if (track === 'both' && answers.trackChoice) {
+    const choice = getStep2Options('both').options.find((o) => o.value === answers.trackChoice);
+    effectiveTrack = choice?.track || 'masters';
+  }
+
+  // Step 2 (or 2b): Track-specific question
+  if (effectiveTrack === 'mba') {
+    return (
+      <QuizQuestion
+        stepLabel="Step 2 of 2"
+        progress={100}
+        question="What type of MBA programme are you looking for?"
+        options={MBA_OPTIONS}
+        selectedValue={answers.mbaChoice}
+        onSelect={(value) => onAnswer('mbaChoice', value)}
+        onBack={onBack}
+        onNext={onNext}
+        canProceed={!!answers.mbaChoice}
+        nextLabel="See Results"
+      />
+    );
+  }
+
+  return (
+    <QuizQuestion
+      stepLabel="Step 2 of 2"
+      progress={100}
+      question="Which area interests you most?"
+      options={MASTERS_OPTIONS}
+      selectedValue={answers.mastersChoice}
+      onSelect={(value) => onAnswer('mastersChoice', value)}
+      onBack={onBack}
+      onNext={onNext}
+      canProceed={!!answers.mastersChoice}
+      nextLabel="See Results"
+    />
+  );
+}
+
+/**
+ * Reusable question UI with radio options.
+ */
+function QuizQuestion({ stepLabel, progress, question, options, selectedValue, onSelect, onBack, onNext, canProceed, nextLabel }) {
   return (
     <div>
       {/* Progress bar */}
       <div className="mb-6">
         <div className="flex justify-between text-xs text-ntu-muted mb-2">
-          <span>Question {stepIndex + 1} of {totalSteps}</span>
-          <span>{Math.round(((stepIndex + 1) / totalSteps) * 100)}%</span>
+          <span>{stepLabel}</span>
+          <span>{progress}%</span>
         </div>
         <div className="w-full h-1.5 bg-ntu-border rounded-full">
           <div
             className="h-full bg-ntu-red rounded-full transition-all duration-300"
-            style={{ width: `${((stepIndex + 1) / totalSteps) * 100}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
-      <h2 className="text-lg font-bold text-ntu-dark mb-5">{step.question}</h2>
+      <h2 className="text-lg font-bold text-ntu-dark mb-5">{question}</h2>
 
       <div className="space-y-2.5 mb-8">
-        {step.options.map((opt) => (
+        {options.map((opt) => (
           <label
             key={opt.value}
             className={`block border rounded-lg p-4 cursor-pointer transition-all ${
-              selected === opt.value
+              selectedValue === opt.value
                 ? 'border-ntu-red bg-ntu-red/[0.04]'
                 : 'border-ntu-border hover:border-ntu-red/40'
             }`}
           >
             <div className="flex items-center gap-3">
               <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                selected === opt.value ? 'border-ntu-red' : 'border-ntu-border'
+                selectedValue === opt.value ? 'border-ntu-red' : 'border-ntu-border'
               }`}>
-                {selected === opt.value && (
+                {selectedValue === opt.value && (
                   <div className="w-2 h-2 rounded-full bg-ntu-red" />
                 )}
               </div>
               <input
                 type="radio"
-                name={step.axis}
+                name={question}
                 value={opt.value}
-                checked={selected === opt.value}
-                onChange={() => onAnswer(step.axis, opt.value)}
+                checked={selectedValue === opt.value}
+                onChange={() => onSelect(opt.value)}
                 className="sr-only"
               />
               <span className="text-sm text-ntu-body">{opt.label}</span>
@@ -147,18 +256,18 @@ export function QuizStep({ stepIndex, answers, onAnswer, onBack, onNext }) {
         </button>
         <button
           onClick={onNext}
-          disabled={selected === undefined}
+          disabled={!canProceed}
           className={`px-6 py-2 text-sm font-semibold rounded transition-colors ${
-            selected !== undefined
+            canProceed
               ? 'bg-ntu-red text-white hover:bg-ntu-red-hover'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
-          {stepIndex === totalSteps - 1 ? 'See Results' : 'Next'}
+          {nextLabel}
         </button>
       </div>
     </div>
   );
 }
 
-export { QUIZ_STEPS };
+export default QuizStep;

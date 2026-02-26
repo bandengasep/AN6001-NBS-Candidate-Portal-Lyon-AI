@@ -3,100 +3,114 @@ import { TopBar } from '../components/Layout/TopBar';
 import { PortalHeader } from '../components/Layout/PortalHeader';
 import { Footer } from '../components/Layout/Footer';
 import { CVUpload } from '../components/Recommend/CVUpload';
-import { QuizStep, QUIZ_STEPS } from '../components/Recommend/QuizStep';
+import { QuizStep, resolveMatches } from '../components/Recommend/QuizStep';
 import { Results } from '../components/Recommend/Results';
-import { SpiderChart } from '../components/Charts/SpiderChart';
 import { getRecommendations } from '../services/api';
 
-// Map parsed CV fields to initial quiz answers
-function cvToAnswers(cv) {
-  const answers = {};
-
-  // Quantitative
-  if (cv.quantitative_background === 'Strong') answers.quantitative = 5;
-  else if (cv.quantitative_background === 'Moderate') answers.quantitative = 3;
-  else if (cv.quantitative_background === 'Limited') answers.quantitative = 1;
-
-  // Experience
+/**
+ * Map parsed CV experience to quiz experience value.
+ */
+function cvToExperience(cv) {
   const yrs = cv.years_experience ?? 0;
-  if (yrs >= 10) answers.experience = 5;
-  else if (yrs >= 6) answers.experience = 4;
-  else if (yrs >= 3) answers.experience = 3;
-  else if (yrs >= 1) answers.experience = 2;
-  else answers.experience = 1;
-
-  // Leadership
-  if (cv.leadership_experience === 'Senior/Executive') answers.leadership = 5;
-  else if (cv.leadership_experience === 'Mid-level/Manager') answers.leadership = 4;
-  else answers.leadership = 1;
-
-  return answers;
+  if (yrs >= 6) return 'senior';
+  if (yrs >= 3) return 'mid';
+  return 'junior';
 }
 
 export default function RecommendPage() {
-  // step: 0=CV upload, 1-7=quiz, 8=results
-  const [step, setStep] = useState(0);
+  // phase: 'cv' | 'quiz' | 'loading' | 'results' | 'error'
+  const [phase, setPhase] = useState('cv');
   const [answers, setAnswers] = useState({});
   const [cvData, setCvData] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  // Quiz step: 1 = experience, 2 = track/interest, 3 = sub-track for 'both'
+  const [quizStep, setQuizStep] = useState(1);
 
   function handleCVParsed(parsed) {
     setCvData(parsed);
-    setAnswers(cvToAnswers(parsed));
-    setStep(1);
+    setAnswers({ experience: cvToExperience(parsed) });
+    setQuizStep(1);
+    setPhase('quiz');
   }
 
   function handleSkipCV() {
-    setStep(1);
+    setQuizStep(1);
+    setPhase('quiz');
   }
 
-  function handleAnswer(axis, value) {
-    setAnswers((prev) => ({ ...prev, [axis]: value }));
+  function handleAnswer(key, value) {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
   }
 
   function handleQuizBack() {
-    if (step === 1) {
-      setStep(0);
+    if (quizStep === 1) {
+      setPhase('cv');
     } else {
-      setStep(step - 1);
+      // Clear the answer for the current step when going back
+      if (quizStep === 2) {
+        setAnswers((prev) => {
+          const next = { ...prev };
+          delete next.trackChoice;
+          delete next.mbaChoice;
+          delete next.mastersChoice;
+          return next;
+        });
+      }
+      setQuizStep(quizStep - 1);
     }
   }
 
   async function handleQuizNext() {
-    if (step < QUIZ_STEPS.length) {
-      setStep(step + 1);
-    } else {
+    // Determine if we need another step
+    const exp = answers.experience;
+    const track = exp === 'senior' ? 'mba' : exp === 'junior' ? 'masters' : 'both';
+
+    if (quizStep === 1) {
+      setQuizStep(2);
+      return;
+    }
+
+    // Step 2: check if 'both' track needs a sub-step
+    if (quizStep === 2 && track === 'both' && !answers.trackChoice) {
+      // They just answered the track choice, move to step 3 (actual question)
+      // This is handled by the QuizStep component internally
+      // If trackChoice is selected, QuizStep shows the next question
+      // But we need to re-render so just stay at step 2
+      return;
+    }
+
+    // Check if we have a final answer
+    const matched = resolveMatches(answers);
+    if (matched.length > 0 || answers.mbaChoice || answers.mastersChoice) {
       // Submit for matching
-      setIsLoading(true);
+      setPhase('loading');
       setError(null);
       try {
         const payload = {
-          ...answers,
-          cv_text: cvData?.raw_text || null,
+          experience: answers.experience,
+          track_choice: answers.trackChoice || null,
+          mba_choice: answers.mbaChoice || null,
+          masters_choice: answers.mastersChoice || null,
         };
         const result = await getRecommendations(payload);
         setMatchResult(result);
-        setStep(QUIZ_STEPS.length + 1);
+        setPhase('results');
       } catch (err) {
         setError(err.response?.data?.detail || 'Failed to get recommendations. Please try again.');
-      } finally {
-        setIsLoading(false);
+        setPhase('error');
       }
     }
   }
 
   function handleRetake() {
-    setStep(0);
+    setPhase('cv');
     setAnswers({});
     setCvData(null);
     setMatchResult(null);
     setError(null);
+    setQuizStep(1);
   }
-
-  const isResultsStep = step === QUIZ_STEPS.length + 1;
-  const isQuizStep = step >= 1 && step <= QUIZ_STEPS.length;
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
@@ -104,16 +118,15 @@ export default function RecommendPage() {
       <PortalHeader />
 
       <main className="flex-1 max-w-[1200px] mx-auto px-8 py-10 w-full">
-        <div className={`grid gap-10 ${isResultsStep ? '' : 'lg:grid-cols-[1fr_380px]'}`}>
-          {/* Left column: wizard steps */}
+        <div className={`max-w-[680px] mx-auto`}>
           <div className="bg-white rounded-lg border border-ntu-border p-8">
-            {step === 0 && (
+            {phase === 'cv' && (
               <CVUpload onParsed={handleCVParsed} onSkip={handleSkipCV} />
             )}
 
-            {isQuizStep && (
+            {phase === 'quiz' && (
               <QuizStep
-                stepIndex={step - 1}
+                step={quizStep}
                 answers={answers}
                 onAnswer={handleAnswer}
                 onBack={handleQuizBack}
@@ -121,44 +134,27 @@ export default function RecommendPage() {
               />
             )}
 
-            {isLoading && (
+            {phase === 'loading' && (
               <div className="text-center py-16">
                 <div className="w-10 h-10 border-2 border-ntu-red border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                 <p className="text-sm text-ntu-muted">Finding your best matches...</p>
               </div>
             )}
 
-            {error && (
+            {phase === 'error' && (
               <div className="text-center py-8">
                 <p className="text-sm text-red-600 mb-4">{error}</p>
-                <button onClick={handleQuizNext} className="text-sm text-ntu-red underline">Try again</button>
+                <button onClick={() => { setPhase('quiz'); }} className="text-sm text-ntu-red underline">Try again</button>
               </div>
             )}
 
-            {isResultsStep && matchResult && (
+            {phase === 'results' && matchResult && (
               <Results
-                userScores={matchResult.user_scores}
                 matches={matchResult.matches}
                 onRetake={handleRetake}
-                cvData={cvData}
               />
             )}
           </div>
-
-          {/* Right column: live spider chart (hidden on results page) */}
-          {!isResultsStep && (
-            <div className="hidden lg:block">
-              <div className="bg-white rounded-lg border border-ntu-border p-6 sticky top-24">
-                <h3 className="text-sm font-semibold text-ntu-dark mb-4">Your Profile</h3>
-                <SpiderChart userScores={answers} />
-                <p className="text-xs text-ntu-muted text-center mt-3">
-                  {Object.keys(answers).length === 0
-                    ? 'Answer quiz questions to build your profile'
-                    : `${Object.keys(answers).length} of 7 axes filled`}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </main>
 

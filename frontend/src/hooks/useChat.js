@@ -113,19 +113,19 @@ export function useChat() {
         {
           id: 0,
           role: 'assistant',
-          content: "Hey! Welcome to NBS. I'm Lyon, NTU's resident lion and your degree advisor.",
+          content: "Hi there! Welcome to NBS. I'm Lyon, NTU's resident lion and your degree advisor.",
           timestamp: new Date().toISOString(),
         },
         {
           id: 1,
           role: 'assistant',
-          content: "I can help you with **programme info** like MBA, MSc, PhD and Executive programmes, **admissions** details like requirements and deadlines, **side-by-side comparisons**, and **general questions** on rankings, scholarships, or campus life.",
+          content: "I can help you with **programme info** like MBA, MSc, and Executive programmes, **admissions** details like requirements and deadlines, **side-by-side comparisons**, and **general questions** on rankings, scholarships, or campus life.",
           timestamp: new Date().toISOString(),
         },
         {
           id: 2,
           role: 'assistant',
-          content: "What programme are you eyeing?",
+          content: "What programme are you interested in?",
           timestamp: new Date().toISOString(),
         },
       ]);

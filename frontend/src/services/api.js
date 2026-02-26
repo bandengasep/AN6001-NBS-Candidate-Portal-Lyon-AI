@@ -57,7 +57,7 @@ export async function getProgram(programId) {
 
 /**
  * Get programs by degree type
- * @param {string} degreeType - Degree type (MBA, MSc, PhD, etc.)
+ * @param {string} degreeType - Degree type (MBA, MSc, Executive, etc.)
  * @returns {Promise<Array>}
  */
 export async function getProgramsByType(degreeType) {
@@ -90,22 +90,12 @@ export async function parseCV(file) {
 }
 
 /**
- * Get programme recommendations based on quiz answers
- * @param {Object} answers - Quiz answers with scores per axis
- * @returns {Promise<{user_scores, matches}>}
+ * Get programme recommendations based on branching quiz answers
+ * @param {Object} answers - { experience, track_choice, mba_choice, masters_choice }
+ * @returns {Promise<{matches}>}
  */
 export async function getRecommendations(answers) {
   const response = await api.post('/recommend/match', answers);
-  return response.data;
-}
-
-/**
- * Get a programme's spider chart profile
- * @param {string} programId
- * @returns {Promise<{name, profile_scores}>}
- */
-export async function getProgramProfile(programId) {
-  const response = await api.get(`/programs/${programId}/profile`);
   return response.data;
 }
 
