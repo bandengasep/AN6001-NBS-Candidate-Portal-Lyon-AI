@@ -12,11 +12,10 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 
 **Key Features Implemented**:
 - Multi-page Candidate Portal (Splash, Recommend, Chat, Programmes)
-- Programme Recommendation Wizard (CV upload + 7-question quiz + spider chart)
+- Programme Recommendation Wizard (CV upload + branching quiz → matched programmes)
 - RAG-powered chatbot (Lyon) for NBS programme information
 - Agentic AI with tool use (search, compare, FAQ)
-- Spider chart profile matching via hybrid scoring (profile + semantic similarity)
-- Programme browser with filter tabs
+- Programme browser with filter tabs (All/MBA/MSc/Executive)
 - Vector similarity search using Supabase pgvector
 - Conversation history and context management
 - Programme comparison capabilities
@@ -24,7 +23,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 
 ## Technology Stack (Current Implementation)
 
-**Frontend**: React 18 + Vite + Tailwind CSS + react-router-dom + chart.js
+**Frontend**: React 18 + Vite + Tailwind CSS + react-router-dom
 **Backend**: FastAPI (Python 3.11+)
 **Database**: Supabase (PostgreSQL + pgvector extension)
 **Vector Store**: Supabase pgvector for RAG
@@ -50,7 +49,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
     /pages        - Route pages (SplashPage, RecommendPage, ChatPage, ProgrammesPage)
     /components
       /Chat       - Chat UI components
-      /Charts     - SpiderChart radar component
+      /Charts     - (reserved, SpiderChart removed)
       /Layout     - TopBar, PortalHeader, Header, Sidebar, Footer
       /Recommend  - CVUpload, QuizStep, Results
     /hooks        - Custom React hooks (useChat)
@@ -66,7 +65,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 | Route | Page | Description |
 |-------|------|-------------|
 | `/` | SplashPage | Landing page with hero, programme grid, Lyon teaser |
-| `/recommend` | RecommendPage | CV upload + 7-question quiz + spider chart results |
+| `/recommend` | RecommendPage | CV upload + branching quiz (experience → track → programmes) |
 | `/chat` | ChatPage | Lyon chatbot (supports `?programme=X` query param) |
 | `/programmes` | ProgrammesPage | Programme browser with filter tabs |
 
@@ -76,7 +75,6 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 |--------|----------|-------------|
 | GET | `/api/programs/` | List all programmes |
 | GET | `/api/programs/{id}` | Get programme by ID |
-| GET | `/api/programs/{id}/profile` | Get spider chart profile scores |
 | GET | `/api/programs/type/{type}` | Filter programmes by degree type |
 | POST | `/api/chat/` | Send chat message to Lyon |
 | POST | `/api/chat/handoff` | Submit advisor hand-off request (demo) |
@@ -114,13 +112,13 @@ npm run build     # Production build
 # 1. Set up Supabase database (run SQL in Supabase dashboard)
 # See: scripts/supabase_setup.sql
 
-# 2. Deep-scrape NBS website (all 22 programmes, sub-pages, PDFs)
+# 2. Deep-scrape NBS website (11 Graduate Studies programmes + sub-pages)
 "/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/deep_scrape.py
 
 # 3. Ingest data into vector store (REQUIRED for chatbot to work)
 "/mnt/c/Users/User/anaconda3/envs/nbs-msba/python.exe" scripts/ingest_data.py
 
-# Expected output: ~1,400+ document chunks ingested from 22 programmes
+# Expected output: ~1,100 document chunks ingested from 11 programmes
 ```
 
 ## Agentic AI Implementation
@@ -146,36 +144,19 @@ The NBS Degree Advisor demonstrates **agentic AI capabilities**:
 
 ## Recent Updates & Improvements
 
-### February 11, 2026 - Hybrid Recommendation Scoring
-- **Hybrid scoring**: Replaced pure embedding similarity with profile similarity (normalized Euclidean distance on 7 spider chart axes) + semantic similarity (rescaled cosine sim), combined with adaptive weights
-- **Adaptive weights**: With CV uploaded: 40% profile / 60% semantic. Without CV: 80% profile / 20% semantic
-- **Score improvement**: Match scores now reach 60-95% for well-matched programmes (was capped at ~50% due to text domain mismatch)
-- **All programmes scored**: Profile similarity computed for all 22 programmes, not just vector search hits
+### February 26, 2026 - Scope Revamp (Regine Feedback)
+- **Programme scope**: Reduced from 22 to 11 programmes (Graduate Studies Office only). Removed PhD, FlexiMasters, IMBA Vietnam, Chinese-language EMBAs, Bachelor, etc.
+- **Inaccurate claims fixed**: Stats bar corrected (AACSB + EQUIS, not triple; #1 MBA in SG #12 globally FT; 11 programmes)
+- **Quiz redesign**: Replaced 7-question spider chart quiz with branching flow (experience → MBA/Masters track → specific question). SpiderChart component deleted.
+- **Lyon persona**: Removed all Singlish, professional-friendly tone for international audience. Added programme scope awareness and career-specific citation instructions.
+- **Backend simplification**: Recommendation endpoint now uses direct branch-to-programme lookup instead of hybrid scoring. `BranchAnswers` model replaces `QuizAnswers`.
+- **Data re-ingestion**: Re-scraped 11 programmes (76 sub-pages), re-ingested ~1,100 vector chunks, cleaned Supabase tables.
 
-### February 10, 2026 - Lyon Humanization & Advisor Hand-off
-- **Conversational responses**: System prompt rewritten with drip-feed pattern (2-4 sentences, offer to elaborate) -- no more information dumps
-- **GPT-5.2 verbosity**: `text.verbosity: "low"` parameter constrains token budget at API level for concise responses
-- **Minimal formatting**: ReactMarkdown restricted to bold/links only; bullet points, headers, and code blocks stripped
-- **Paragraph breaks**: Explicit prompt instruction + Responses API content block handling ensures readable line breaks
-- **Advisor hand-off (demo)**: `schedule_advisor_session` tool triggers inline HandoffCard form in chat (name, email, topic)
-- **Hand-off triggers**: Lyon proactively offers hand-off for knowledge gaps; users can request directly ("talk to a real advisor")
-
-### February 9, 2026 - Reliability Fixes
-- **Agent recursion limit fix**: Separated LangGraph execution steps (recursion_limit=25) from LLM call budget (ModelCallLimitMiddleware, run_limit=6). Enables multi-tool workflows without hitting limits
-- **Python version pinning**: Added `.python-version` with `3.12` to prevent Vercel upgrade surprises
-- **Timeout removal**: Removed aggressive 8s asyncio.timeout that was failing all chat responses
-- **Prompt hardening**: Added topic fencing, off-topic rejection, and anti-injection rules to Lyon
-
-### February 9, 2026 - Data Enrichment
-- **Deep scraper**: `scripts/deep_scrape.py` crawls all 22 programmes (landing + sub-pages + PDFs)
-- **Vector store expansion**: Re-ingested 1,400+ document chunks (from 36) covering tuition, admissions, deadlines, scholarships, career outcomes
-- **pgvector IVFFlat fix**: Applied `probes=10` in `match_documents` SQL function to prevent approximate index from missing high-similarity chunks
-
-### February 8, 2026 - Candidate Portal Launch
-- **Multi-page portal**: 4 routes (splash, recommend, chat, programmes)
-- **Recommendation wizard**: CV upload (pdfplumber + GPT) + 7-question quiz + spider chart matching
-- **Programme browser**: Filter tabs, NTU branding, Lyon integration
-- **Vercel deployment**: Live at https://nbs-candidate-portal.vercel.app (FastAPI serves frontend via StaticFiles)
+### Earlier (Feb 8-11, 2026)
+- **Feb 8**: Candidate Portal launch (4 routes, CV upload, programme browser, Vercel deployment)
+- **Feb 9**: Deep scraper, vector store expansion, agent recursion limit fix, prompt hardening
+- **Feb 10**: Lyon humanization (drip-feed pattern, GPT-5.2 verbosity), advisor hand-off demo
+- **Feb 11**: Hybrid recommendation scoring (later replaced by branching quiz in Feb 26 revamp)
 
 ### Key Configuration
 - **Environment**: `backend/.env` (API keys - DO NOT commit)
