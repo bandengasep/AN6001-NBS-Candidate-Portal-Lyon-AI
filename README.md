@@ -8,13 +8,13 @@ An AI-powered candidate portal for Nanyang Business School that demonstrates adv
 
 ## Overview
 
-The NBS Candidate Portal is a multi-page web application that helps prospective students explore NBS degree programmes. It features an AI-powered recommendation wizard, a chatbot advisor (Lyon), and a programme browser. Using vector similarity search, LangChain agents, and GPT-5.2, it delivers contextually relevant information through natural conversation.
+The NBS Graduate Candidate Portal is a multi-page web application that helps prospective students explore NBS graduate degree programmes. It features an AI-powered recommendation wizard, a chatbot advisor (Lyon), and a programme browser. Scoped to the 11 programmes managed by the NBS Graduate Studies Office, it uses vector similarity search, LangChain agents, and GPT-5.2 to deliver contextually relevant information through natural conversation.
 
 ## Key Features
 
-- **Programme Recommendation Wizard**: Upload your CV + answer a 7-question quiz to get personalised programme matches with hybrid scoring (profile + semantic similarity) and spider chart comparison
-- **Lyon AI Chatbot**: NTU's lion mascot as your NBS degree advisor, with conversational drip-feed responses, file upload support (PDF/JPG/PNG), and advisor hand-off
-- **Programme Browser**: Browse all 22 NBS programmes with filter tabs and direct links
+- **Programme Recommendation Wizard**: Upload your CV + take a branching quiz (experience → track → interest) to get matched programmes with rationale
+- **Lyon AI Chatbot**: NTU's lion mascot as your NBS degree advisor, with professional conversational responses, file upload support (PDF/JPG/PNG), and advisor hand-off
+- **Programme Browser**: Browse all 11 NBS graduate programmes with filter tabs and direct links
 - **Agentic AI Architecture**: Autonomous tool selection and multi-step reasoning using LangChain agents
 - **RAG Pipeline**: Retrieval-augmented generation with vector embeddings for accurate, grounded responses
 - **Programme Comparison**: Side-by-side analysis of degree options via the chatbot
@@ -25,9 +25,9 @@ The NBS Candidate Portal is a multi-page web application that helps prospective 
 | Route | Page | Description |
 |-------|------|-------------|
 | `/` | Splash Page | NTU-styled landing page with hero, programme grid, Lyon teaser |
-| `/recommend` | Recommendation Wizard | CV upload + 7-question quiz + spider chart results |
+| `/recommend` | Recommendation Wizard | CV upload + branching quiz → matched programmes |
 | `/chat` | Lyon Chatbot | AI chatbot with file upload support |
-| `/programmes` | Programme Browser | All 22 programmes with filter tabs |
+| `/programmes` | Programme Browser | All 11 graduate programmes with filter tabs |
 
 ## Architecture
 
@@ -51,7 +51,7 @@ Candidates → Frontend (React + Vite) → Backend (FastAPI) → LangChain Agent
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | React 18 • Vite • Tailwind CSS • React Router • Chart.js |
+| **Frontend** | React 18 • Vite • Tailwind CSS • React Router |
 | **Backend / API** | FastAPI • Python 3.12 • Pydantic |
 | **AI & Agents** | LangChain • LangGraph • GPT-5.2 • text-embedding-3-small (1536d) |
 | **Database** | Supabase • PostgreSQL • pgvector |
@@ -101,7 +101,7 @@ See `CLAUDE.md` for detailed setup instructions, environment configuration, and 
 ## Core Capabilities
 
 **RAG Pipeline**
-- 1,400+ vector-embedded chunks from 22 NBS programmes (landing pages, sub-pages, PDFs)
+- ~1,100 vector-embedded chunks from 11 NBS graduate programmes (landing pages, sub-pages)
 - Semantic search via Supabase pgvector with tuned IVFFlat index for high recall
 - Covers tuition fees, admissions, curriculum, career outcomes, scholarships
 

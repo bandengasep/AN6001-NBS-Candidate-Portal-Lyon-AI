@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree Advisor Chatbot** with **Agentic AI** capabilities. The project demonstrates RAG (Retrieval-Augmented Generation), agentic tool use, and conversational AI in an educational context.
 
-**Current Implementation**: NBS Candidate Portal - A multi-page web application with AI-powered programme recommendations, a chatbot advisor (Lyon), and a programme browser.
+**Current Implementation**: NBS Graduate Candidate Portal - A multi-page web application with AI-powered programme recommendations, a chatbot advisor (Lyon), and a programme browser.
 
 **Original Project Concept** (for reference): The initial guideline proposed a banking web application, but the current implementation focuses on the NBS degree advisor as a practical demonstration of agentic AI capabilities.
 
@@ -15,7 +15,7 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 - Programme Recommendation Wizard (CV upload + branching quiz → matched programmes)
 - RAG-powered chatbot (Lyon) for NBS programme information
 - Agentic AI with tool use (search, compare, FAQ)
-- Programme browser with filter tabs (All/MBA/MSc/Executive)
+- Programme browser with filter tabs (All/MBA/MSc)
 - Vector similarity search using Supabase pgvector
 - Conversation history and context management
 - Programme comparison capabilities
@@ -67,7 +67,9 @@ This is an **AN6001 AI and Big Data Group Project** implementing an **NBS Degree
 | `/` | SplashPage | Landing page with hero, programme grid, Lyon teaser |
 | `/recommend` | RecommendPage | CV upload + branching quiz (experience → track → programmes) |
 | `/chat` | ChatPage | Lyon chatbot (supports `?programme=X` query param) |
-| `/programmes` | ProgrammesPage | Programme browser with filter tabs |
+| `/programmes` | ProgrammesPage | Programme browser with filter tabs (All/MBA/MSc) |
+
+**Note**: ProgrammesPage filter tabs must match `degree_type` values in Supabase (`MBA`, `MSc`, `EMBA`). The Executive MBA has `degree_type: "EMBA"`, not "Executive".
 
 ## Backend API Endpoints
 
